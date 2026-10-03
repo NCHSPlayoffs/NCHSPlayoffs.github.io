@@ -793,8 +793,16 @@
     .last-calc-delta.flat{color:#75889b}
     .last-calc-empty{padding:22px 14px;border:1px solid #354250;border-radius:9px;color:#8799ab;text-align:center;font-size:12px;background:#10161e}
     @media(max-width:700px){.last-calc-summary{grid-template-columns:1fr}}
-    .debug-modal{width:min(980px,calc(100vw - 24px));max-height:min(880px,92vh)}
-    .debug-modal .modal-body{display:grid;gap:12px;overflow:auto}
+    .modal.debug-modal{width:min(1320px,100%);max-height:94vh}
+    .debug-modal .modal-body{min-height:0}
+    .debug-section-head{cursor:pointer;user-select:none}
+    .debug-section-head::before{content:"▸";color:#9aafc3}
+    .debug-section[open]>.debug-section-head::before{content:"▾"}
+    .debug-section-head strong{flex:1}
+    .debug-section-head:focus-visible{outline:2px solid #67bcff;outline-offset:-3px}
+    .debug-row-action{display:block;margin-top:6px;font-size:12px;padding:4px 8px}
+    .debug-row-meta{max-width:180px;overflow-wrap:anywhere}
+    .debug-modal .modal-body{display:grid;grid-auto-rows:max-content;gap:12px;overflow:auto}
     .debug-overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
     .debug-stat{border:1px solid #354250;border-radius:9px;background:#111820;padding:10px 11px;min-width:0}
     .debug-stat span{display:block;color:#8294a7;font-size:12px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
@@ -803,9 +811,9 @@
     .debug-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid #303c49;background:#171f29}
     .debug-section-head strong{font-size:12px;text-transform:uppercase;letter-spacing:.055em}
     .debug-count{min-width:28px;height:22px;display:grid;place-items:center;border:1px solid #405062;border-radius:999px;padding:0 7px;color:#b8c5d3;font-size:12px;font-weight:950}
-    .debug-list{max-height:240px;overflow:auto;padding:7px;display:grid;gap:6px}
+    .debug-list{max-height:340px;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:7px;display:grid;gap:6px}
     .debug-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:9px;align-items:start;border:1px solid #2e3945;border-radius:8px;background:#131a22;padding:8px 9px;min-width:0}
-    .debug-row.dismissed{opacity:.64;border-style:dashed}
+    .debug-row.dismissed{border-style:dashed}
     .debug-investigated-badge{display:inline-flex;align-items:center;min-height:18px;padding:0 6px;margin-right:6px;border:1px solid rgba(135,153,171,.35);border-radius:999px;background:rgba(135,153,171,.08);color:#9aabba;font-size:12px;font-weight:950;letter-spacing:.04em;text-transform:uppercase}
     .debug-severity{min-width:50px;height:21px;display:grid;place-items:center;border-radius:5px;padding:0 6px;font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.04em}
     .debug-severity.info{background:rgba(87,151,214,.13);color:#8fc4f3}
@@ -813,8 +821,8 @@
     .debug-severity.error{background:rgba(239,103,103,.13);color:#ff9d9d}
     .debug-row-copy{min-width:0}
     .debug-row-copy strong{display:block;color:#e9f0f6;font-size:12px;margin-bottom:2px}
-    .debug-row-copy span{display:block;color:#8fa0b1;font-size:12px;line-height:1.35;overflow-wrap:anywhere}
-    .debug-row-meta{color:#6f8193;font-size:12px;font-weight:800;white-space:nowrap}
+    .debug-row-copy span{display:block;color:#8fa0b1;font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+    .debug-row-meta{color:#6f8193;font-size:12px;font-weight:800;white-space:normal}
     .debug-row.team-debug-row{cursor:context-menu}
     .debug-row.team-debug-row:hover{background:#18212b;border-color:#415061}
     .debug-context-menu{
@@ -2342,6 +2350,12 @@
       background:rgba(245,185,66,.07);
     }
 
+    .match-center.manual{
+      color:#ffd781;
+      border-color:rgba(245,185,66,.42);
+      background:rgba(245,185,66,.10);
+    }
+
     @media (max-width:1250px){
       .game-modal .game-toolbar{
         grid-template-columns:repeat(4,minmax(0,1fr));
@@ -2532,9 +2546,14 @@
       background:linear-gradient(180deg,#1c2430,#171e27);
     }
 
-    .team-history-summary-card:first-child{
+    .team-history-summary-card.is-east{
       border-color:#2d65a4;
       background:linear-gradient(180deg,#172843,#1a2231);
+    }
+
+    .team-history-summary-card.is-west{
+      border-color:#a43b42;
+      background:linear-gradient(180deg,#3a2027,#241a20);
     }
 
     .team-history-summary-card span{
@@ -2554,8 +2573,12 @@
       color:#f2f3f5;
     }
 
-    .team-history-summary-card:first-child strong{
+    .team-history-summary-card.is-east strong{
       color:#79b7ff;
+    }
+
+    .team-history-summary-card.is-west strong{
+      color:#ff858a;
     }
 
     .team-history-toolbar{
@@ -3592,6 +3615,22 @@
       align-items:center;
       gap:14px;
     }
+
+    .team-schedule-back{
+      flex:0 0 auto;
+      min-height:40px;
+      padding:0 12px;
+      border:1px solid #354353;
+      border-radius:8px;
+      background:#1b2632;
+      color:#dce8f5;
+      font-size:12px;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .team-schedule-back:hover{background:#253444;border-color:#54708b}
+    .team-schedule-back[hidden]{display:none}
 
     .team-schedule-logo-wrap{
       flex:0 0 88px;
@@ -5836,6 +5875,7 @@
     <div class="modal team-schedule-modal">
       <div class="team-schedule-head">
         <div class="team-schedule-identity">
+          <button id="teamScheduleBack" class="team-schedule-back" type="button" aria-label="Back to previous team schedule" hidden>← Back</button>
           <div id="teamScheduleLogoWrap" class="team-schedule-logo-wrap"></div>
 
           <div class="team-schedule-title-copy">
@@ -5883,6 +5923,36 @@
     </div>
   </div>
 
+  <style>
+    #gameFinalDialog { width:min(460px,calc(100vw - 32px)); box-sizing:border-box; background:#19212b; color:#eef4fa; border:1px solid #495a6c; border-radius:16px; padding:24px; box-shadow:0 24px 80px #0009; }
+    #gameFinalDialog::backdrop { background:#0009; }
+    #gameFinalDialog h2 { margin:0 0 10px; font-size:22px; }
+    #gameFinalDialog p { color:#b8c7d6; line-height:1.5; }
+    #gameFinalDialog label { display:block; margin:16px 0; }
+    #settingsModal.admin-unlock-overlay { z-index:12000; align-items:center; justify-content:center; padding:16px; }
+    #settingsModal.show.admin-unlock-overlay { display:flex; background:rgba(0,0,0,.65); }
+    #settingsModal.admin-unlock-overlay .board-settings-modal { margin:auto; }
+    #settingsModal.admin-unlock-overlay .settings-accordion:not([data-settings-section="admin"]) { display:none; }
+    #gameFinalDialog input { display:block; box-sizing:border-box; width:100%; margin-top:6px; padding:10px; background:#0f1720; color:#fff; border:1px solid #53677a; border-radius:7px; font:inherit; }
+    #gameFinalDialog button { padding:10px 14px; border:1px solid #53677a; border-radius:8px; background:#263647; color:#fff; cursor:pointer; }
+    #gameFinalDialog button[type=submit] { background:#22634c; }
+    #gameFinalDialog button:disabled { opacity:.6; cursor:wait; }
+    .game-final-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+    #gameFinalStatus { min-height:24px; }
+    #gameFinalStatus.error { color:#ffaaaa; }
+  </style>
+  <dialog id="gameFinalDialog" aria-labelledby="gameFinalTitle">
+    <form id="gameFinalForm">
+      <h2 id="gameFinalTitle">Post final score</h2>
+      <p id="gameFinalMatchup"></p>
+      <p>This marks the game final and updates RPI. Your override stays until a refresh finds a MaxPreps final, including a matching final score.</p>
+      <label><span id="gameFinalAwayLabel">Away score</span><input id="gameFinalAway" type="number" min="0" max="999" step="1" required></label>
+      <label><span id="gameFinalHomeLabel">Home score</span><input id="gameFinalHome" type="number" min="0" max="999" step="1" required></label>
+      <p id="gameFinalStatus" role="status" aria-live="polite"></p>
+      <div class="game-final-actions"><button id="gameFinalCancel" type="button">Cancel</button><button id="gameFinalSave" type="submit">Save final &amp; update RPI</button></div>
+    </form>
+  </dialog>
+
   <!-- game explorer modal -->
 
   <div id="teamHistoryModal" class="modal-backdrop">
@@ -5900,7 +5970,7 @@
       </div>
 
       <div id="teamHistorySummary" class="team-history-summary">
-        <div class="team-history-summary-card">
+        <div id="teamHistoryRegionCard" class="team-history-summary-card">
           <span>Region</span>
           <strong id="teamHistoryRegion">—</strong>
         </div>
@@ -5992,7 +6062,7 @@
       <div class="modal-head">
         <div>
           <h2>RPI Graph Game Explorer</h2>
-          <div class="admin-small">Defaults to the same 48-hour smart window the worker monitors every minute.</div>
+          <div class="admin-small">Defaults to the same 48-hour smart window the worker monitors every minute. Right-click a game to post a final score (admin key required).</div>
         </div>
         <button id="gameCloseBtn" class="close-btn" type="button">×</button>
       </div>
@@ -6025,6 +6095,7 @@
               <option value="remaining" selected>Remaining</option>
               <option value="live">Live</option>
               <option value="completed">Completed</option>
+              <option value="manual">Manual Entries (Unofficial)</option>
               <option value="all">All Games</option>
             </select>
           </div>
@@ -6479,22 +6550,22 @@
           <div class="debug-stat"><span>Worker</span><strong id="debugWorkerSummary">—</strong></div>
         </div>
         <div class="debug-toolbar"><button id="debugRefreshBtn" type="button">Refresh Diagnostics</button></div>
-        <section class="debug-section">
-          <div class="debug-section-head"><strong>Current Issues</strong><span id="debugIssueCount" class="debug-count">0</span></div>
-          <div id="debugIssueList" class="debug-list"></div>
-        </section>
-        <section class="debug-section">
-          <div class="debug-section-head"><strong>Missing Team Data</strong><span id="debugTeamIssueCount" class="debug-count">0</span></div>
-          <div id="debugTeamIssueList" class="debug-list"></div>
-        </section>
-        <section class="debug-section">
-          <div class="debug-section-head"><strong>Dismissed / Investigated</strong><span id="debugDismissedIssueCount" class="debug-count">0</span></div>
-          <div id="debugDismissedIssueList" class="debug-list"></div>
-        </section>
-        <section class="debug-section">
-          <div class="debug-section-head"><strong>Refresh / Calculation History</strong><span id="debugRefreshIssueCount" class="debug-count">0</span></div>
-          <div id="debugRefreshIssueList" class="debug-list"></div>
-        </section>
+        <details class="debug-section" open>
+          <summary class="debug-section-head"><strong>Current Issues</strong><span id="debugIssueCount" class="debug-count">0</span></summary>
+          <div id="debugIssueList" class="debug-list" tabindex="0"></div>
+        </details>
+        <details class="debug-section" open>
+          <summary class="debug-section-head"><strong>Team Data Issues</strong><span id="debugTeamIssueCount" class="debug-count">0</span></summary>
+          <div id="debugTeamIssueList" class="debug-list" tabindex="0"></div>
+        </details>
+        <details class="debug-section" open>
+          <summary class="debug-section-head"><strong>Dismissed / Investigated</strong><span id="debugDismissedIssueCount" class="debug-count">0</span></summary>
+          <div id="debugDismissedIssueList" class="debug-list" tabindex="0"></div>
+        </details>
+        <details class="debug-section" open>
+          <summary class="debug-section-head"><strong>Refresh / Calculation History</strong><span id="debugRefreshIssueCount" class="debug-count">0</span></summary>
+          <div id="debugRefreshIssueList" class="debug-list" tabindex="0"></div>
+        </details>
       </div>
     </div>
   </div>
@@ -6647,16 +6718,26 @@
             </div>
 
             <div class="settings-card">
-              <div class="history-control-label">Rank Change Display</div>
+              <div class="history-control-label">RPI Change Display</div>
               <div class="history-toggle-row">
                 <strong>Show Last Change</strong>
-                <label class="switch" title="Show the most recent persisted RPI and rank movement on the live table.">
+                <label class="switch" title="Show the live change columns compared with the latest logged snapshot.">
                   <input id="showLastChangeToggle" type="checkbox" />
                   <span class="slider"></span>
                 </label>
               </div>
               <div class="history-toggle-copy">
-                Keeps the most recent rank or RPI movement visible when the newest live snapshot did not change that value. A selected comparison snapshot overrides these deltas.
+                Shows live RPI and rank changes since the latest logged snapshot. You can switch the change columns to the most recent persisted movement below. A selected comparison snapshot overrides both options.
+              </div>
+              <div class="history-toggle-row">
+                <strong>Show Last Nonzero Change</strong>
+                <label class="switch" title="Use the most recent persisted nonzero RPI and rank movement instead of the logged-snapshot comparison.">
+                  <input id="showLastNonzeroChangeToggle" type="checkbox" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="history-toggle-copy">
+                Off (default): changes are measured from the latest logged snapshot. On: show the latest persisted nonzero change.
               </div>
             </div>
           </div>
@@ -6710,6 +6791,7 @@
       historyResetBtn: document.getElementById("historyResetBtn"),
       historySnapshotList: document.getElementById("historySnapshotList"),
       showLastChangeToggle: document.getElementById("showLastChangeToggle"),
+      showLastNonzeroChangeToggle: document.getElementById("showLastNonzeroChangeToggle"),
       tableModeBanner: document.getElementById("tableModeBanner"),
       tableModeTitle: document.getElementById("tableModeTitle"),
       tableModeDetail: document.getElementById("tableModeDetail"),
@@ -6726,6 +6808,7 @@
 
       teamScheduleModal: document.getElementById("teamScheduleModal"),
       teamScheduleClose: document.getElementById("teamScheduleClose"),
+      teamScheduleBack: document.getElementById("teamScheduleBack"),
       teamScheduleLogoWrap: document.getElementById("teamScheduleLogoWrap"),
       teamScheduleName: document.getElementById("teamScheduleName"),
       teamScheduleMeta: document.getElementById("teamScheduleMeta"),
@@ -6809,6 +6892,7 @@
       teamHistoryTitle: document.getElementById("teamHistoryTitle"),
       teamHistorySubtitle: document.getElementById("teamHistorySubtitle"),
       teamHistoryRegion: document.getElementById("teamHistoryRegion"),
+      teamHistoryRegionCard: document.getElementById("teamHistoryRegionCard"),
       teamHistoryRegionRank: document.getElementById("teamHistoryRegionRank"),
       teamHistoryRecord: document.getElementById("teamHistoryRecord"),
       teamHistoryRpi: document.getElementById("teamHistoryRpi"),
@@ -6950,9 +7034,12 @@
     let allRows = [];
     let historyRows = [];
     let compareSnapshotRows = [];
+    let latestLoggedSnapshotRows = [];
+    let latestLoggedSnapshot = null;
     let historySnapshot = null;
     let compareSnapshot = null;
     let showLastChange = localStorage.getItem("brsnRpiShowLastChange") !== "0";
+    let showLastNonzeroChange = localStorage.getItem("brsnRpiShowLastNonzeroChange") === "1";
     let snapshotListsInitialized = false;
     let previous = new Map();
     let realtimeChannel = null;
@@ -6978,6 +7065,11 @@
     let gameExplorerRows = [];
     let gameExplorerLoaded = false;
     let gameExplorerStale = false;
+    let gameNodeRecords = new Map();
+    let nonNchsaaScheduleCache = new Map();
+    let teamScheduleOpenToken = 0;
+    let currentScheduleTeam = null;
+    let teamScheduleHistory = [];
     let gameExplorerSearchTimer = null;
     let lastGameStatusSignature = null;
     let gameExplorerSort = { key: "game_day", type: "date", dir: "asc" };
@@ -7246,7 +7338,35 @@
     let lastViewerHeartbeatAt = 0;
     let liveSyncRunning = false;
 
+    let pendingAdminAction = null;
+    let adminKeySubmitting = false;
     els.adminSecret.value = adminKey;
+
+    function rememberAdminKey(key) {
+      adminKey = key;
+      for (const name of ["nchsaaRpiAdminKey", "brsnFootballAdminKey"]) {
+        if (key) sessionStorage.setItem(name, key);
+        else sessionStorage.removeItem(name);
+      }
+      els.adminSecret.value = "";
+      syncAdminAccessUi();
+    }
+
+    async function validateAndRememberAdminKey(key) {
+      const result = await postAdminDebugAction("validate-admin", { adminKey: key });
+      if (result.valid !== true) throw new Error("Invalid admin key. Try again.");
+      rememberAdminKey(key);
+    }
+
+    function requestAdminUnlock(onUnlocked) {
+      pendingAdminAction = onUnlocked;
+      syncAdminAccessUi();
+      els.adminLaunchHelp.textContent = "Enter your admin key to unlock all admin actions for this browser session. Your game explorer stays open.";
+      els.settingsModal.classList.add("show", "admin-unlock-overlay");
+      els.gameModal.inert = true;
+      openOnlySettingsSection("admin");
+      els.adminSecret.focus();
+    }
 
     function syncAdminAccessUi() {
       const unlocked = Boolean(adminKey);
@@ -7405,13 +7525,13 @@
       const endExclusive = teamHistoryAddDays(teamHistoryStartOfDay(endDate), 1);
 
       // Include one prior snapshot so the first displayed row can still show
-      // an accurate change from the immediately preceding full refresh.
+      // an accurate change from the immediately preceding RPI snapshot.
       const { data: priorSnapshots, error: priorError } = await supabase
         .from("sport_rpi_snapshots")
         .select("id,snapshot_at,refresh_type,calculation_mode")
         .eq("sport", currentSport)
         .eq("season", currentSeason)
-        .eq("refresh_type", "full")
+        .in("refresh_type", ["full", "manual-final"])
         .lt("snapshot_at", start.toISOString())
         .order("snapshot_at", { ascending:false })
         .limit(1);
@@ -7423,7 +7543,7 @@
         .select("id,snapshot_at,refresh_type,calculation_mode")
         .eq("sport", currentSport)
         .eq("season", currentSeason)
-        .eq("refresh_type", "full")
+        .in("refresh_type", ["full", "manual-final"])
         .gte("snapshot_at", start.toISOString())
         .lt("snapshot_at", endExclusive.toISOString())
         .order("snapshot_at", { ascending:true });
@@ -7604,7 +7724,11 @@
       els.teamHistorySubtitle.textContent =
         `Live RPI snapshot history • ${sportLabel()} ${row.classification || ""}`.trim();
 
-      els.teamHistoryRegion.textContent = row._display_region || row.region || "—";
+      const displayRegion = row._display_region || row.region || "—";
+      const normalizedRegion = String(displayRegion).trim().toLowerCase();
+      els.teamHistoryRegion.textContent = displayRegion;
+      els.teamHistoryRegionCard.classList.toggle("is-east", normalizedRegion === "east");
+      els.teamHistoryRegionCard.classList.toggle("is-west", normalizedRegion === "west");
       els.teamHistoryRegionRank.textContent =
         row._display_region_rank != null
           ? `#${row._display_region_rank}`
@@ -8218,21 +8342,19 @@
       if (event.target === els.debugModal) closeDebugLog();
     });
 
-    [els.debugIssueList, els.debugTeamIssueList].forEach(list => {
+    [els.debugIssueList, els.debugTeamIssueList, els.debugDismissedIssueList, els.debugRefreshIssueList].forEach(list => {
       list.addEventListener("contextmenu", event => {
-        const rowEl = event.target.closest("[data-debug-team-id]");
-        if (!rowEl) return;
-
+        const rowEl = event.target.closest("[data-debug-warning-key]");
+        const item = debugIssuesByKey.get(rowEl?.dataset.debugWarningKey);
+        if (!item) return;
         event.preventDefault();
-
-        const teamId = String(rowEl.dataset.debugTeamId || "");
-        const warningKey = String(rowEl.dataset.debugWarningKey || "");
-        const item = collectTeamDiagnostics().find(issue =>
-          String(issue.teamId) === teamId &&
-          String(issue.warningKey || "") === warningKey
-        );
-
-        if (item) showDebugContextMenu(event, item);
+        showDebugContextMenu(event, item);
+      });
+      list.addEventListener("click", async event => {
+        const button = event.target.closest("[data-debug-dismiss]");
+        if (!button) return;
+        const item = debugIssuesByKey.get(button.dataset.debugDismiss);
+        if (item) await toggleDebugDismissal(item);
       });
     });
 
@@ -8259,12 +8381,9 @@
 
     els.debugDismissBtn.addEventListener("click", async () => {
       if (!debugContextItem?.warningKey || !debugContextItem?.warningFingerprint) return;
-      dismissDebugWarning(
-        debugContextItem.warningKey,
-        debugContextItem.warningFingerprint
-      );
+      const item = debugContextItem;
       hideDebugContextMenu();
-      await loadDebugLog();
+      await toggleDebugDismissal(item);
     });
 
     els.debugOptOutBtn.addEventListener("click", () => {
@@ -8542,6 +8661,40 @@
       };
     }
 
+    function rebuildGameNodeRecords(games = gameExplorerRows) {
+      const records = new Map();
+
+      for (const game of games) {
+        if (!game.has_result || game.home_score == null || game.away_score == null) continue;
+        const homeScore = Number(game.home_score);
+        const awayScore = Number(game.away_score);
+        if (!Number.isFinite(homeScore) || !Number.isFinite(awayScore)) continue;
+
+        for (const [side, score, opponentScore] of [
+          ["home", homeScore, awayScore],
+          ["away", awayScore, homeScore]
+        ]) {
+          const nodeId = game[`${side}_node_id`];
+          if (nodeId == null || nodeId === "") continue;
+          const key = String(nodeId);
+          const record = records.get(key) || { wins:0, losses:0, ties:0 };
+          if (score > opponentScore) record.wins++;
+          else if (score < opponentScore) record.losses++;
+          else record.ties++;
+          records.set(key, record);
+        }
+      }
+
+      gameNodeRecords = records;
+    }
+
+    function gameNodeRecordText(nodeId) {
+      if (nodeId == null || nodeId === "") return "";
+      const record = gameNodeRecords.get(String(nodeId));
+      if (!record) return "";
+      return `${record.wins}-${record.losses}${record.ties ? `-${record.ties}` : ""}`;
+    }
+
     function easternDateString(date = new Date()) {
       const parts = new Intl.DateTimeFormat("en-CA", {
         timeZone: "America/New_York",
@@ -8723,6 +8876,7 @@
 
       gameExplorerRows =
         allGames.map(decorateGameRow);
+      rebuildGameNodeRecords();
 
       gameExplorerLoaded = true;
       gameExplorerStale = false;
@@ -8846,6 +9000,13 @@
         if (
           resultFilter === "completed" &&
           !row.has_result
+        ) {
+          return false;
+        }
+
+        if (
+          resultFilter === "manual" &&
+          !row.manual_override_at
         ) {
           return false;
         }
@@ -9056,7 +9217,9 @@
             ? "Live games"
             : els.gameResultFilter.value === "completed"
               ? "Completed games"
-              : "All games";
+              : els.gameResultFilter.value === "manual"
+                ? "Manual entries (unofficial)"
+                : "All games";
 
       const scopeLabels = {
         smart: "Smart window",
@@ -9096,6 +9259,14 @@
       }).join("");
     }
 
+
+    function splitTeamDisplayName(value, state = "") {
+      const raw = String(value || "Unknown").trim();
+      const locationMatch = raw.match(/^(.*?)\s+\((.+,\s*[A-Z]{2})\)\s*$/i);
+      const name = locationMatch?.[1]?.trim() || raw;
+      const location = locationMatch?.[2]?.trim() || String(state || "").trim().toUpperCase();
+      return { name, location };
+    }
 
     function teamLogoHtml(row, side) {
       const isNchsaa = Boolean(row[`${side}_is_nchsaa_member`]);
@@ -9141,13 +9312,12 @@
 
     function teamSideHtml(row, side) {
       const home = side === "home";
-      const name = row[`${side}_name`] || "Unknown";
-      const state = String(row[`${side}_state`] || "").toUpperCase();
+      const { name, location } = splitTeamDisplayName(row[`${side}_name`], row[`${side}_state`]);
       const cls = row[`${side}_classification`] || "";
       const type = row[`${side}_type`] || "";
 
       const metaBits = [home ? "HOME" : "AWAY"];
-      if (state) metaBits.push(state);
+      if (location) metaBits.push(location);
       if (cls && row[`${side}_is_nchsaa_member`]) metaBits.push(cls);
       if (!row[`${side}_is_nchsaa_member`]) metaBits.push(type);
 
@@ -9166,27 +9336,25 @@
 
     function teamCopyHtml(row, side) {
       const home = side === "home";
-      const name = row[`${side}_name`] || "Unknown";
-      const state = String(row[`${side}_state`] || "").toUpperCase();
+      const { name, location } = splitTeamDisplayName(row[`${side}_name`], row[`${side}_state`]);
       const cls = row[`${side}_classification`] || "";
       const type = row[`${side}_type`] || "";
 
       const metaBits = [home ? "HOME" : "AWAY"];
 
-      if (state) metaBits.push(state);
+      if (location) metaBits.push(location);
       if (cls && row[`${side}_is_nchsaa_member`]) metaBits.push(cls);
       if (!row[`${side}_is_nchsaa_member`]) metaBits.push(type);
 
       const resolvedTeam = resolveGameSideTeam(row, side);
-      const teamId = resolvedTeam?.team_id ?? "";
       const record = String(resolvedTeam?.record || "").trim();
       const displayName = record
         ? `${name} (${record})`
         : name;
-
-      const clickable = teamId ? " game-team-link" : "";
-      const attrs = teamId
-        ? ` data-open-team-schedule="${escapeHtml(String(teamId))}" role="button" tabindex="0" title="Open ${escapeHtml(name)} schedule"`
+      const scheduleAttrs = gameSideScheduleAttrs(row, side, resolvedTeam);
+      const clickable = scheduleAttrs ? " game-team-link" : "";
+      const attrs = scheduleAttrs
+        ? ` ${scheduleAttrs} role="button" tabindex="0" title="Open ${escapeHtml(name)} schedule"`
         : "";
 
       return `
@@ -9217,25 +9385,116 @@
       return `<div class="score-box${stateClass} ${winner ? "winner" : ""}">${score ?? "—"}</div>`;
     }
 
+    let gameFinalSelection = null;
+    let gameFinalSaving = false;
+    const gameFinalDialog = document.getElementById("gameFinalDialog");
+    const gameFinalStatus = document.getElementById("gameFinalStatus");
+
+    function openGameFinalEditor(event) {
+      const tr = event.target.closest("[data-game-contest]");
+      if (!tr) return;
+      const row = gameExplorerRows.find(game => String(game.contest_id) === tr.dataset.gameContest);
+      if (!row) return;
+      event.preventDefault();
+      const selected = { ...row, sport: currentSport, season: currentSeason };
+      if (!adminKey) {
+        requestAdminUnlock(() => showGameFinalEditor(selected));
+        return;
+      }
+      showGameFinalEditor(selected);
+    }
+
+    function showGameFinalEditor(row) {
+      gameFinalSelection = row;
+      document.getElementById("gameFinalMatchup").textContent = `${splitTeamDisplayName(row.away_name, row.away_state).name} at ${splitTeamDisplayName(row.home_name, row.home_state).name} · ${formatGameDate(row.game_day)}`;
+      document.getElementById("gameFinalAwayLabel").textContent = `${splitTeamDisplayName(row.away_name, row.away_state).name} (away)`;
+      document.getElementById("gameFinalHomeLabel").textContent = `${splitTeamDisplayName(row.home_name, row.home_state).name} (home)`;
+      document.getElementById("gameFinalAway").value = row.away_score ?? "";
+      document.getElementById("gameFinalHome").value = row.home_score ?? "";
+      document.getElementById("gameFinalSave").disabled = false;
+      document.getElementById("gameFinalCancel").textContent = "Cancel";
+      gameFinalStatus.className = "";
+      gameFinalStatus.textContent = "";
+      gameFinalDialog.showModal();
+      document.getElementById("gameFinalAway").focus();
+    }
+
+    gameFinalDialog.addEventListener("cancel", event => {
+      if (gameFinalSaving) event.preventDefault();
+    });
+    gameFinalDialog.addEventListener("close", () => {
+      gameFinalSelection = null;
+    });
+    document.getElementById("gameFinalCancel").addEventListener("click", () => gameFinalDialog.close());
+    document.getElementById("gameFinalForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!gameFinalSelection || gameFinalSaving) return;
+      const selected = gameFinalSelection;
+      const homeScore = document.getElementById("gameFinalHome").valueAsNumber;
+      const awayScore = document.getElementById("gameFinalAway").valueAsNumber;
+      if (![homeScore, awayScore].every(score => Number.isInteger(score) && score >= 0 && score <= 999)) return;
+      gameFinalSaving = true;
+      const save = document.getElementById("gameFinalSave");
+      const cancel = document.getElementById("gameFinalCancel");
+      save.disabled = cancel.disabled = true;
+      gameFinalStatus.className = "";
+      gameFinalStatus.textContent = "Saving final score and recalculating RPI…";
+      let saved = false;
+      try {
+        const result = await postAdminDebugAction("set-game-final", {
+          sport: selected.sport, season: selected.season, contestId: selected.contest_id,
+          homeNodeId: Number(selected.home_node_id), awayNodeId: Number(selected.away_node_id),
+          homeScore, awayScore
+        });
+        saved = true;
+        gameExplorerStale = true;
+        await loadRankings();
+        await loadGameExplorer();
+        const changedTeams = Number(result?.rpiChanged);
+        const changedSummary = Number.isFinite(changedTeams)
+          ? ` ${changedTeams.toLocaleString()} team records changed.`
+          : "";
+        gameFinalStatus.textContent =
+          `Final score saved. RPI recalculated for all ${allRows.length.toLocaleString()} teams.${changedSummary}`;
+      } catch (err) {
+        gameFinalStatus.className = "error";
+        gameFinalStatus.textContent = saved
+          ? "Final score saved and RPI recalculated, but the panel could not reload. Refresh the page to see it."
+          : (err?.message || "Could not save the final score.");
+        if (!saved && err?.status === 403) {
+          rememberAdminKey("");
+          gameFinalDialog.close();
+          requestAdminUnlock(() => showGameFinalEditor({ ...selected, home_score: homeScore, away_score: awayScore }));
+        }
+      } finally {
+        gameFinalSaving = false;
+        save.disabled = saved;
+        cancel.disabled = false;
+        cancel.textContent = saved ? "Done" : "Cancel";
+      }
+    });
+
     function renderGameTable(rows) {
       const sorted = sortGameRows(rows);
 
       els.gameTableEmpty.style.display = sorted.length ? "none" : "block";
 
       els.gameTableBody.innerHTML = sorted.map(row => {
-        const statusText = row.has_result
-          ? "FINAL"
-          : (row.is_live ? "LIVE" : "AT");
+        const statusText = row.manual_override_at
+          ? "MANUAL"
+          : (row.has_result ? "FINAL" : (row.is_live ? "LIVE" : "AT"));
 
-        const centerClass = row.has_result
-          ? "final"
-          : (row.is_live ? "live" : "scheduled");
+        const centerClass = row.manual_override_at
+          ? "manual"
+          : (row.has_result ? "final" : (row.is_live ? "live" : "scheduled"));
+        const awayScheduleAttrs = gameSideScheduleAttrs(row, "away");
+        const homeScheduleAttrs = gameSideScheduleAttrs(row, "home");
 
         return `
-          <tr class="schedule-row">
+          <tr class="schedule-row" data-game-contest="${escapeHtml(row.contest_id)}" tabindex="0" aria-label="${escapeHtml(`${splitTeamDisplayName(row.away_name, row.away_state).name} at ${splitTeamDisplayName(row.home_name, row.home_state).name}. Right-click or press Shift+F10 to post a final score.`)}">
             <td class="schedule-date">
               <div class="schedule-date-main">${escapeHtml(formatGameDate(row.game_day))}</div>
-              <div class="schedule-date-sub">${escapeHtml(row.has_result ? "Final" : (row.is_live ? "Live" : "Scheduled"))}</div>
+              <div class="schedule-date-sub">${escapeHtml(row.manual_override_at ? "Manual entry · Unofficial" : (row.has_result ? "Final" : (row.is_live ? "Live" : "Scheduled")))}</div>
             </td>
 
             <td class="game-matchup">
@@ -9243,8 +9502,8 @@
                 ${teamCopyHtml(row, "away")}
 
                 <div
-                  class="matchup-logo away${gameSideTeamId(row, "away") ? " game-team-link" : ""}"
-                  ${gameSideTeamId(row, "away") ? `data-open-team-schedule="${escapeHtml(String(gameSideTeamId(row, "away")))}" role="button" tabindex="0" title="Open ${escapeHtml(row.away_name || "away team")} schedule"` : ""}
+                  class="matchup-logo away${awayScheduleAttrs ? " game-team-link" : ""}"
+                  ${awayScheduleAttrs ? `${awayScheduleAttrs} role="button" tabindex="0" title="Open ${escapeHtml(row.away_name || "away team")} schedule"` : ""}
                 >
                   ${teamLogoHtml(row, "away")}
                 </div>
@@ -9258,8 +9517,8 @@
                 ${scoreHtml(row, "home")}
 
                 <div
-                  class="matchup-logo home${gameSideTeamId(row, "home") ? " game-team-link" : ""}"
-                  ${gameSideTeamId(row, "home") ? `data-open-team-schedule="${escapeHtml(String(gameSideTeamId(row, "home")))}" role="button" tabindex="0" title="Open ${escapeHtml(row.home_name || "home team")} schedule"` : ""}
+                  class="matchup-logo home${homeScheduleAttrs ? " game-team-link" : ""}"
+                  ${homeScheduleAttrs ? `${homeScheduleAttrs} role="button" tabindex="0" title="Open ${escapeHtml(row.home_name || "home team")} schedule"` : ""}
                 >
                   ${teamLogoHtml(row, "home")}
                 </div>
@@ -9591,6 +9850,7 @@
     }
 
     let debugContextItem = null;
+    let debugIssuesByKey = new Map();
     let debugFixItem = null;
 
     function debugDismissStorageKey() {
@@ -9633,22 +9893,24 @@
     }
 
     function showDebugContextMenu(event, item) {
-      if (!item?.teamId) return;
+      if (!item?.warningKey) return;
 
       const team = allRows.find(row => String(row.team_id) === String(item.teamId));
-      if (!team) return;
 
       debugContextItem = item;
       els.debugContextTitle.textContent =
-        `${team.name || team.school_name || "Team"} • ${team.classification || "—"}`;
+        team ? `${team.name || team.school_name || "Team"} • ${team.classification || "—"}` : item.title;
 
       els.debugFixBtn.style.display = item.fixType ? "" : "none";
 
-      els.debugOptOutBtn.textContent = team.playoff_opted_out
+      els.debugDismissBtn.textContent = item.dismissed ? "Restore issue" : "Dismiss issue";
+      els.debugDismissBtn.style.display = item.autoDismissed ? "none" : "";
+      els.debugOptOutBtn.style.display = team ? "" : "none";
+      els.debugOptOutBtn.textContent = team?.playoff_opted_out
         ? "Restore playoff eligibility"
         : "Opt team out";
 
-      els.debugOptOutBtn.className = team.playoff_opted_out
+      els.debugOptOutBtn.className = team?.playoff_opted_out
         ? "debug-context-action"
         : "debug-context-action danger";
 
@@ -9745,53 +10007,12 @@
       els.debugFixAuthStatus.textContent = "Checking admin key…";
 
       try {
-        const response = await fetch(SPORT_WORKER_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": SUPABASE_PUBLISHABLE_KEY,
-            "Authorization": `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
-          },
-          body: JSON.stringify({
-            mode: "viewer",
-            action: "validate-admin",
-            sport: currentSport,
-            season: currentSeason,
-            adminKey: key
-          })
-        });
-
-        let body = {};
-        try {
-          body = await response.json();
-        } catch {}
-
-        if (!response.ok || body?.ok !== true || body?.valid !== true) {
-          // Never keep a key that the worker rejected.
-          adminKey = "";
-          sessionStorage.removeItem("brsnFootballAdminKey");
-          sessionStorage.removeItem("nchsaaRpiAdminKey");
-          els.adminSecret.value = "";
-
-          els.debugFixAuthStatus.className = "debug-fix-status error";
-          els.debugFixAuthStatus.textContent =
-            body?.error || "Invalid admin key. Try again.";
-
-          els.debugFixAdminKey.select();
-          els.debugFixAdminKey.focus();
-          return;
-        }
-
-        adminKey = key;
-        sessionStorage.setItem("brsnFootballAdminKey", adminKey);
-        els.adminSecret.value = adminKey;
+        await validateAndRememberAdminKey(key);
 
         unlockDebugFixUi();
       }
       catch (err) {
-        adminKey = "";
-        sessionStorage.removeItem("brsnFootballAdminKey");
-        els.adminSecret.value = "";
+        rememberAdminKey("");
 
         els.debugFixAuthStatus.className = "debug-fix-status error";
         els.debugFixAuthStatus.textContent =
@@ -9985,7 +10206,9 @@
       try { body = await response.json(); } catch {}
 
       if (!response.ok || body?.ok === false) {
-        throw new Error(body?.error || `Debug fix failed: HTTP ${response.status}`);
+        const error = new Error(body?.error || `Admin action failed: HTTP ${response.status}`);
+        error.status = response.status;
+        throw error;
       }
 
       return body;
@@ -10218,10 +10441,10 @@
 
         // Clear any dismissal for this exact issue after a real fix action.
         const dismissed = getDismissedDebugWarnings();
-        dismissed.delete(savedItem.warningKey);
+        delete dismissed[savedItem.warningKey];
         localStorage.setItem(
           debugDismissStorageKey(),
-          JSON.stringify([...dismissed])
+          JSON.stringify(dismissed)
         );
 
         // Redraw the debug modal immediately from confirmed/local data.
@@ -10288,22 +10511,26 @@
       }
     }
 
-    function debugRowHtml(item) {
-      const teamAttrs = item.teamId
-        ? ` data-debug-team-id="${escapeHtml(String(item.teamId))}" data-debug-warning-key="${escapeHtml(item.warningKey || "")}"`
-        : "";
-      const rowClass = [
-        "debug-row",
-        item.teamId ? "team-debug-row" : "",
-        item.dismissed ? "dismissed" : ""
-      ].filter(Boolean).join(" ");
+    async function toggleDebugDismissal(item) {
+      if (item.autoDismissed || !item.warningKey) return;
+      if (item.dismissed) {
+        const dismissed = getDismissedDebugWarnings();
+        delete dismissed[item.warningKey];
+        localStorage.setItem(debugDismissStorageKey(), JSON.stringify(dismissed));
+      } else {
+        dismissDebugWarning(item.warningKey, item.warningFingerprint);
+      }
+      await loadDebugLog();
+    }
 
-      return `<div class="${rowClass}"${teamAttrs}>
+    function debugRowHtml(item) {
+      return `<div class="debug-row ${item.teamId ? "team-debug-row" : ""} ${item.dismissed ? "dismissed" : ""}" data-debug-warning-key="${escapeHtml(item.warningKey || "")}">
         <span class="debug-severity ${item.severity}">${escapeHtml(item.severity)}</span>
         <div class="debug-row-copy"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.detail || "")}</span></div>
         <span class="debug-row-meta">
-          ${item.dismissed ? `<span class="debug-investigated-badge">Investigated</span>` : ""}
+          ${item.dismissed ? `<span class="debug-investigated-badge">${item.autoDismissed ? "Opted out" : "Dismissed"}</span>` : ""}
           ${escapeHtml(item.meta || "")}
+          ${item.warningKey && !item.autoDismissed ? `<button type="button" class="debug-row-action" data-debug-dismiss="${escapeHtml(item.warningKey)}">${item.dismissed ? "Restore issue" : "Dismiss"}</button>` : ""}
         </span>
       </div>`;
     }
@@ -10324,7 +10551,8 @@
           teamId: row.team_id,
           warningKey,
           warningFingerprint,
-          dismissed: isDebugWarningDismissed(warningKey, warningFingerprint)
+          autoDismissed: Boolean(row.playoff_opted_out),
+          dismissed: Boolean(row.playoff_opted_out) || isDebugWarningDismissed(warningKey, warningFingerprint)
         });
       };
 
@@ -10381,11 +10609,12 @@
           });
         }
 
-        if (row.active !== false && !row.playoff_opted_out && row.rpi == null) {
+        // Playoff eligibility does not exempt a team's games from RPI.
+        if (row.active !== false && row.rpi == null) {
           pushTeamIssue(row, "no-rpi", {
             severity: "warn",
             title: `${name} has no RPI`,
-            detail: `${classText} • Record ${recordText} • opponents ${row.opponent_count ?? "—"}`,
+            detail: `${classText} • Record ${recordText} • opponents ${row.opponent_count ?? "—"}${row.playoff_opted_out ? " • Playoff opt-out does not exclude this team from RPI calculations" : ""}`,
             meta: row.classification || "—",
             fixType: "full-refresh"
           }, {
@@ -10393,7 +10622,7 @@
           });
         }
 
-        if (!row.playoff_opted_out && Number(row.missing_owp_opponents || 0) > 0) {
+        if (Number(row.missing_owp_opponents || 0) > 0) {
           const missingCount = Number(row.missing_owp_opponents);
           pushTeamIssue(row, "missing-owp", {
             severity: "warn",
@@ -10406,7 +10635,7 @@
           });
         }
 
-        if (!row.playoff_opted_out && row.rpi != null && (row.wp == null || row.owp == null || row.oowp == null)) {
+        if (row.rpi != null && (row.wp == null || row.owp == null || row.oowp == null)) {
           pushTeamIssue(row, "calculation-fields", {
             severity: "error",
             title: `${name} has inconsistent calculation fields`,
@@ -10439,6 +10668,7 @@
             severity:"error",
             title:`Worker status: ${worker.last_status}`,
             detail:worker.last_message || "The latest worker run did not finish cleanly.",
+            occurrence:worker.last_run_finished_at || worker.last_run_started_at,
             meta:relativeTime(worker.last_run_finished_at || worker.last_run_started_at)
           });
         }
@@ -10471,6 +10701,7 @@
           severity:"error",
           title:"Active full refresh has an error",
           detail:String(activeRefreshJobRow.last_error),
+          occurrence:activeRefreshJobRow.job_id || activeRefreshJobRow.started_at,
           meta:String(activeRefreshJobRow.phase || "")
         });
       }
@@ -10489,12 +10720,29 @@
           .limit(12);
 
         if (!error) {
+          // Inspect the latest completed attempt even when its overall status
+          // is successful. Older failures may already have been repaired.
+          const latestFinished = (data || []).find(row => row.finished_at);
+          for (const failure of latestFinished?.schedule_failures || []) {
+            const message = String(failure);
+            const path = message.split(": ")[0];
+            const team = allRows.find(row => String(row.maxpreps_path || "").replace(/^\/+|\/+$/g, "") === path);
+            issues.push({
+              severity: "warn",
+              title: `${team?.name || path}: schedule refresh failed`,
+              detail: message,
+              teamId: team?.team_id,
+              occurrence: latestFinished.job_id || latestFinished.started_at || latestFinished.finished_at,
+              meta: "Partial refresh failure"
+            });
+          }
           for (const row of data || []) {
             const status = String(row.status || "").toLowerCase();
             if (status === "failed" || row.last_error) {
               issues.push({
                 severity:"error",
                 title:`Full refresh ${status || "issue"}`,
+                occurrence:row.job_id || row.started_at || row.finished_at,
                 detail:row.last_error || "Refresh job did not complete successfully",
                 meta:row.started_at ? new Date(row.started_at).toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) : ""
               });
@@ -10503,13 +10751,20 @@
         }
       } catch {}
 
-      return issues;
+      return issues.map(item => {
+        const warningKey = `refresh:${item.title}:${item.occurrence || "current"}`;
+        const warningFingerprint = JSON.stringify([item.severity, item.detail]);
+        const team = allRows.find(row => item.teamId != null && String(row.team_id) === String(item.teamId));
+        const autoDismissed = Boolean(team?.playoff_opted_out);
+        return {...item, warningKey, warningFingerprint, autoDismissed,
+          dismissed: autoDismissed || isDebugWarningDismissed(warningKey, warningFingerprint)};
+      });
     }
 
     function updateDebugCard(teamIssues = null, refreshIssues = null) {
       const rawTeam = teamIssues || collectTeamDiagnostics();
       const team = rawTeam.filter(issue => !issue.dismissed);
-      const refresh = refreshIssues || [];
+      const refresh = (refreshIssues || []).filter(issue => !issue.dismissed);
       const all = [...team, ...refresh];
       const errors = all.filter(x => x.severity === "error").length;
       const warnings = all.filter(x => x.severity === "warn").length;
@@ -10538,8 +10793,11 @@
 
       const rawTeamIssues = collectTeamDiagnostics();
       const activeTeamIssues = rawTeamIssues.filter(issue => !issue.dismissed);
-      const dismissedTeamIssues = rawTeamIssues.filter(issue => issue.dismissed);
-      const refreshIssues = await collectRefreshDiagnostics();
+      const rawRefreshIssues = await collectRefreshDiagnostics();
+      const allIssues = [...rawTeamIssues, ...rawRefreshIssues];
+      debugIssuesByKey = new Map(allIssues.map(item => [item.warningKey, item]));
+      const dismissedTeamIssues = allIssues.filter(issue => issue.dismissed);
+      const refreshIssues = rawRefreshIssues.filter(issue => !issue.dismissed);
 
       const currentIssues = [
         ...refreshIssues.filter(x => x.severity === "error"),
@@ -10727,12 +10985,20 @@
       allRows = [];
       historyRows = [];
       compareSnapshotRows = [];
+      latestLoggedSnapshotRows = [];
+      latestLoggedSnapshot = null;
       compareSnapshot = null;
       historySnapshot = null;
       snapshotListsInitialized = false;
       previous = new Map();
       gameExplorerRows = [];
       gameExplorerLoaded = false;
+      gameNodeRecords = new Map();
+      nonNchsaaScheduleCache.clear();
+      teamScheduleOpenToken++;
+      currentScheduleTeam = null;
+      teamScheduleHistory = [];
+      if (els.teamScheduleBack) els.teamScheduleBack.hidden = true;
       workerStatusRow = null;
       activeRefreshJobRow = null;
       gameStatusRow = null;
@@ -10858,6 +11124,35 @@
           rpi_updated_at: snapshot.snapshot_at
         };
       });
+    }
+
+    async function loadLatestLoggedSnapshot() {
+      latestLoggedSnapshot = null;
+      latestLoggedSnapshotRows = [];
+
+      const { data, error } = await supabase
+        .from("sport_rpi_snapshots")
+        .select("id,sport,season,snapshot_at,refresh_type,calculation_mode,team_count")
+        .eq("sport", currentSport)
+        .eq("season", currentSeason)
+        .in("refresh_type", ["full", "manual-final"])
+        .order("snapshot_at", { ascending:false })
+        .limit(1);
+
+      if (error) throw error;
+
+      const snapshot = data?.[0];
+      if (!snapshot) return;
+
+        const { data: rows, error: rowError } = await supabase
+          .from("sport_rpi_snapshot_rows")
+          .select("snapshot_id,team_id,rpi,overall_rank,class_rank,region_rank,region")
+          .eq("snapshot_id", snapshot.id)
+          .limit(5000);
+
+        if (rowError) throw rowError;
+        latestLoggedSnapshotRows = rows || [];
+      latestLoggedSnapshot = snapshot;
     }
 
     function renderSnapshotCards(container, snapshots, activeId, onSelect) {
@@ -11029,6 +11324,7 @@
     async function openSettings() {
       els.settingsModal.classList.add("show");
       els.showLastChangeToggle.checked = showLastChange;
+      els.showLastNonzeroChangeToggle.checked = showLastNonzeroChange;
       applyTableViewModeUi();
       syncAdminAccessUi();
       renderAdminList();
@@ -11037,8 +11333,17 @@
     }
 
     function closeSettings() {
-      els.settingsModal.classList.remove("show");
+      els.settingsModal.classList.remove("show", "admin-unlock-overlay");
+      els.gameModal.inert = false;
+      pendingAdminAction = null;
     }
+
+    els.settingsModal.addEventListener("keydown", event => {
+      if (event.key === "Escape" && els.settingsModal.classList.contains("admin-unlock-overlay")) {
+        event.stopPropagation();
+        closeSettings();
+      }
+    });
 
     function setSettingsSectionOpen(name, open = true) {
       const section = els.settingsModal.querySelector(`[data-settings-section="${name}"]`);
@@ -11194,13 +11499,32 @@
         return;
       }
 
+      const loggedRows = new Map(
+        latestLoggedSnapshotRows.map(row => [String(row.team_id), row])
+      );
+
       targetRows.forEach(row => {
-        row._active_rpi_change = row.rpi_change ?? null;
-        row._active_overall_rank_change = row.overall_rank_change ?? null;
-        row._active_class_rank_change =
-          row.class_rank_change ?? row.rank_change ?? row._last_class_rank_change ?? null;
-        row._active_region_rank_change =
-          row.region_rank_change ?? row._last_region_rank_change ?? null;
+        const lastLogged = loggedRows.get(String(row.team_id));
+        row._active_rpi_change = showLastNonzeroChange
+          ? row.rpi_change ?? null
+          : row.rpi == null || !lastLogged || lastLogged.rpi == null
+            ? null
+            : Number(row.rpi) - Number(lastLogged.rpi);
+        row._active_overall_rank_change = showLastNonzeroChange
+          ? row.overall_rank_change ?? null
+          : lastLogged
+            ? rankDelta(row.overall_rank, lastLogged.overall_rank)
+            : null;
+        row._active_class_rank_change = showLastNonzeroChange
+          ? row.class_rank_change ?? row.rank_change ?? row._last_class_rank_change ?? null
+          : lastLogged
+            ? rankDelta(row.class_rank, lastLogged.class_rank)
+            : null;
+        row._active_region_rank_change = showLastNonzeroChange
+          ? row.region_rank_change ?? row._last_region_rank_change ?? null
+          : lastLogged && row._display_region === lastLogged.region
+            ? rankDelta(row._display_region_rank, lastLogged.region_rank)
+            : null;
       });
     }
 
@@ -11832,12 +12156,14 @@
         .filter(value => value != null && value !== "")
         .map(value => String(value));
 
-      if (
-        row.team_id != null &&
-        possibleIds.includes(String(row.team_id))
-      ) {
+      if (row.team_id != null && possibleIds.includes(String(row.team_id))) {
         return true;
       }
+
+      if (
+        row.sport_node_id != null &&
+        String(game[`${side}_node_id`] ?? "") === String(row.sport_node_id)
+      ) return true;
 
       return teamNameMatches(
         game[`${side}_name`],
@@ -11892,18 +12218,42 @@
       }
 
       const name = game[`${side}_name`];
-      if (!name) return null;
-
-      // Fallback only when the view did not supply a usable team ID.
-      // teamNameMatches is intentionally exact after normalization.
-      return allRows.find(row =>
+      const knownTeam = game[`${side}_is_nchsaa_member`] && name ? allRows.find(row =>
         teamNameMatches(name, row)
-      ) || null;
+      ) : null;
+      if (knownTeam) return knownTeam;
+
+      const nodeId = game[`${side}_node_id`];
+      if (nodeId == null || nodeId === "" || !name) return null;
+
+      const record = gameNodeRecordText(nodeId);
+      return {
+        sport_node_id: nodeId,
+        name,
+        school_name: name,
+        state: game[`${side}_state`] || "",
+        classification: game[`${side}_classification`] || "",
+        is_nchsaa_member: Boolean(game[`${side}_is_nchsaa_member`]),
+        record,
+        logo_1_url: game[`${side}_logo_url`] || "",
+        maxpreps_url: game[`${side}_maxpreps_url`] || "",
+        maxpreps_path: game[`${side}_maxpreps_path`] || ""
+      };
     }
 
     function gameSideTeamId(game, side) {
       const team = resolveGameSideTeam(game, side);
       return team?.team_id ?? "";
+    }
+
+    function gameSideScheduleAttrs(game, side, resolvedTeam = resolveGameSideTeam(game, side)) {
+      if (resolvedTeam?.team_id != null) {
+        return `data-open-team-schedule="${escapeHtml(String(resolvedTeam.team_id))}"`;
+      }
+      if (resolvedTeam?.sport_node_id != null) {
+        return `data-open-sport-node-schedule="${escapeHtml(String(resolvedTeam.sport_node_id))}"`;
+      }
+      return "";
     }
 
     function teamScheduleLogoHtml(row) {
@@ -11925,6 +12275,75 @@
       }
 
       return `<div class="team-schedule-opponent-fallback">${escapeHtml(state || "—")}</div>`;
+    }
+
+    async function fetchNonNchsaaSchedule(team) {
+      const nodeId = Number(team?.sport_node_id);
+      if (!Number.isSafeInteger(nodeId) || nodeId <= 0) {
+        throw new Error("This team has no MaxPreps schedule ID available.");
+      }
+
+      const key = `${currentSport}:${currentSeason}:${nodeId}`;
+      const cached = nonNchsaaScheduleCache.get(key);
+      if (cached && cached.expiresAt > Date.now()) return cached.promise;
+
+      const promise = (async () => {
+        const { data, error } = await supabase.functions.invoke("brsn-football-worker", {
+          body: {
+            mode:"viewer",
+            action:"fetch-team-schedule",
+            sport:currentSport,
+            season:currentSeason,
+            sportNodeId:nodeId
+          }
+        });
+        if (error) throw error;
+        if (!data?.ok) throw new Error(data?.error || "Could not load the complete MaxPreps schedule.");
+        if (Number(data.sportNodeId) !== nodeId || !Array.isArray(data.games)) {
+          throw new Error("The MaxPreps schedule loader is not deployed to Supabase yet.");
+        }
+        return {
+          teamPath:data.teamPath || "",
+          games:(data.games || []).map(game => ({
+            ...game,
+            manual_override_at:null,
+            home_is_nchsaa_member:false,
+            away_is_nchsaa_member:false
+          }))
+        };
+      })();
+
+      nonNchsaaScheduleCache.set(key, { expiresAt:Date.now() + 60_000, promise });
+      try {
+        return await promise;
+      } catch (error) {
+        nonNchsaaScheduleCache.delete(key);
+        throw error;
+      }
+    }
+
+    function scheduleRecordForTeam(team, games) {
+      let wins = 0;
+      let losses = 0;
+      let ties = 0;
+      let counted = 0;
+      for (const game of games) {
+        if (!game.has_result) continue;
+        const isHome = gameSideMatchesTeam(game, "home", team);
+        const isAway = gameSideMatchesTeam(game, "away", team);
+        if (!isHome && !isAway) continue;
+        const rawScore = game[isHome ? "home_score" : "away_score"];
+        const rawOpponentScore = game[isHome ? "away_score" : "home_score"];
+        if (rawScore == null || rawScore === "" || rawOpponentScore == null || rawOpponentScore === "") continue;
+        const score = Number(rawScore);
+        const opponentScore = Number(rawOpponentScore);
+        if (!Number.isFinite(score) || !Number.isFinite(opponentScore)) continue;
+        counted++;
+        if (score > opponentScore) wins++;
+        else if (score < opponentScore) losses++;
+        else ties++;
+      }
+      return counted ? `${wins}-${losses}${ties ? `-${ties}` : ""}` : "";
     }
 
     function renderTeamScheduleGames(row, games) {
@@ -11949,10 +12368,12 @@
 
         const opponentSide = isHome ? "away" : "home";
         const opponentTeam = resolveGameSideTeam(game, opponentSide);
-        const opponentTeamId = opponentTeam?.team_id ?? "";
+        const opponentScheduleAttrs = gameSideScheduleAttrs(game, opponentSide, opponentTeam);
 
-        const opponentName =
+        const rawOpponentName =
           game[`${opponentSide}_name`] || "Unknown opponent";
+        const { name: opponentName, location: opponentLocation } =
+          splitTeamDisplayName(rawOpponentName, game[`${opponentSide}_state`]);
 
         const opponentRecord =
           String(opponentTeam?.record || "").trim();
@@ -11961,9 +12382,6 @@
           opponentRecord
             ? `${opponentName} (${opponentRecord})`
             : opponentName;
-
-        const opponentState =
-          game[`${opponentSide}_state`] || "";
 
         const opponentClass =
           game[`${opponentSide}_classification`] || "";
@@ -12020,8 +12438,8 @@
 
         return `
           <div
-            class="team-schedule-game${opponentTeamId ? " team-schedule-team-link" : ""}"
-            ${opponentTeamId ? `data-open-team-schedule="${escapeHtml(String(opponentTeamId))}" role="button" tabindex="0" title="Open ${escapeHtml(opponentName)} schedule"` : ""}
+            class="team-schedule-game${opponentScheduleAttrs ? " team-schedule-team-link" : ""}"
+            ${opponentScheduleAttrs ? `${opponentScheduleAttrs} role="button" tabindex="0" title="Open ${escapeHtml(opponentName)} schedule"` : ""}
           >
             <div class="team-schedule-date">
               <strong>${escapeHtml(formatGameDate(game.game_day))}</strong>
@@ -12036,7 +12454,7 @@
               <strong>${isHome ? "vs" : "@"} ${escapeHtml(opponentDisplayName)}</strong>
               <span>
                 ${isHome ? "HOME" : "AWAY"}
-                ${opponentState ? ` • ${escapeHtml(opponentState)}` : ""}
+                ${opponentLocation ? ` • ${escapeHtml(opponentLocation)}` : ""}
                 ${opponentClass ? ` • ${escapeHtml(opponentClass)}` : ""}
               </span>
             </div>
@@ -12047,15 +12465,41 @@
       }).join("");
     }
 
-    async function openTeamSchedule(row) {
+    function teamScheduleHistoryKey(row) {
+      if (row?.sport_node_id != null) return `node:${row.sport_node_id}`;
+      if (row?.team_id != null) return `team:${row.team_id}`;
+      return `name:${String(row?.state || "").toUpperCase()}:${normalizeTeamName(row?.name || row?.school_name || "")}`;
+    }
+
+    function syncTeamScheduleBackButton() {
+      els.teamScheduleBack.hidden = teamScheduleHistory.length === 0;
+    }
+
+    async function openTeamSchedule(row, options = {}) {
+      const previousTeam = currentScheduleTeam;
+      if (options.fromHistory) {
+        currentScheduleTeam = row;
+      } else if (options.pushHistory) {
+        if (previousTeam && teamScheduleHistoryKey(previousTeam) !== teamScheduleHistoryKey(row)) {
+          teamScheduleHistory.push(previousTeam);
+        }
+        currentScheduleTeam = row;
+      } else {
+        teamScheduleHistory = [];
+        currentScheduleTeam = row;
+      }
+      syncTeamScheduleBackButton();
+      const loadToken = ++teamScheduleOpenToken;
       els.teamScheduleLogoWrap.innerHTML =
         teamScheduleLogoHtml(row);
 
+      const { name: scheduleTeamName, location: scheduleTeamLocation } =
+        splitTeamDisplayName(row.name || row.school_name || "Team", row.state);
       els.teamScheduleName.textContent =
-        row.name || row.school_name || "Team";
+        scheduleTeamName;
 
       els.teamScheduleMeta.textContent =
-        `${schoolYearLabel()} ${sportLabel()} • ${row.classification || "—"}${row.mascot ? ` • ${row.mascot}` : ""}`;
+        `${schoolYearLabel()} ${sportLabel()}${scheduleTeamLocation ? ` • ${scheduleTeamLocation}` : ""}${row.classification ? ` • ${row.classification}` : ""}${row.mascot ? ` • ${row.mascot}` : ""}`;
 
       const scheduleRegion =
         row._display_region || row.region || "—";
@@ -12104,6 +12548,10 @@
 
       els.teamScheduleModal.classList.add("show");
 
+      const fullSchedulePromise = !row.is_nchsaa_member && row.sport_node_id != null
+        ? fetchNonNchsaaSchedule(row).then(result => ({ result })).catch(error => ({ error }))
+        : null;
+
       try {
         let sourceRows;
 
@@ -12111,17 +12559,61 @@
           sourceRows = gameExplorerRows;
         }
         else {
-          sourceRows = await fetchAllGameExplorerRows();
+          sourceRows = (await fetchAllGameExplorerRows()).map(decorateGameRow);
+          gameExplorerRows = sourceRows;
+          gameExplorerLoaded = true;
+          gameExplorerStale = false;
+          rebuildGameNodeRecords();
         }
 
+        if (loadToken !== teamScheduleOpenToken) return;
         const games = sourceRows.filter(game =>
           gameSideMatchesTeam(game, "home", row) ||
           gameSideMatchesTeam(game, "away", row)
         );
 
         renderTeamScheduleGames(row, games);
+
+        if (fullSchedulePromise) {
+          els.teamScheduleCount.textContent =
+            `${games.length.toLocaleString()} GAMES LOADED • CHECKING MAXPREPS…`;
+          const fullSchedule = await fullSchedulePromise;
+          if (loadToken !== teamScheduleOpenToken) return;
+          if (fullSchedule.error) {
+            const message = String(fullSchedule.error?.message || fullSchedule.error || "");
+            const needsDeploy = /not deployed to Supabase/i.test(message);
+            els.teamScheduleCount.textContent = needsDeploy
+              ? `${games.length.toLocaleString()} GAMES SHOWN • SCHEDULE LOADER NOT DEPLOYED`
+              : `${games.length.toLocaleString()} GAMES SHOWN • MAXPREPS SCHEDULE UNAVAILABLE`;
+            els.teamScheduleCount.title = message;
+          } else {
+            const result = fullSchedule.result;
+            if (!row.maxpreps_path && result.teamPath) {
+              row.maxpreps_path = `/${result.teamPath}`;
+              els.teamScheduleMaxPreps.href = `https://www.maxpreps.com${row.maxpreps_path}`;
+              els.teamScheduleMaxPreps.style.display = "";
+            }
+            const uniqueGames = new Map();
+            for (const game of games) {
+              const key = game.contest_id || `${game.game_day}|${game.home_name}|${game.away_name}`;
+              uniqueGames.set(String(key), game);
+            }
+            for (const game of result.games) {
+              const key = game.contest_id || `${game.game_day}|${game.home_name}|${game.away_name}`;
+              if (uniqueGames.get(String(key))?.manual_override_at) continue;
+              uniqueGames.set(String(key), game);
+            }
+            const completeGames = [...uniqueGames.values()].sort((a, b) =>
+              String(a.game_day || "").localeCompare(String(b.game_day || ""))
+            );
+            const completeRecord = scheduleRecordForTeam(row, completeGames);
+            if (completeRecord) els.teamScheduleRecord.textContent = completeRecord;
+            renderTeamScheduleGames(row, completeGames);
+          }
+        }
       }
       catch (err) {
+        if (loadToken !== teamScheduleOpenToken) return;
         els.teamScheduleCount.textContent = "SCHEDULE ERROR";
         els.teamScheduleList.innerHTML =
           `<div class="team-schedule-empty">${escapeHtml(err?.message || err)}</div>`;
@@ -12129,7 +12621,20 @@
     }
 
     function closeTeamSchedule() {
+      teamScheduleOpenToken++;
+      currentScheduleTeam = null;
+      teamScheduleHistory = [];
+      syncTeamScheduleBackButton();
       els.teamScheduleModal.classList.remove("show");
+    }
+
+    function goBackInTeamSchedules() {
+      const previous = teamScheduleHistory.pop();
+      if (!previous) {
+        syncTeamScheduleBackButton();
+        return;
+      }
+      openTeamSchedule(previous, { fromHistory:true });
     }
 
     function showTeamContextMenu(event, row) {
@@ -13290,8 +13795,11 @@
         status?.calculation_mode ||
         rowMode;
 
-      els.lastCalc.textContent =
-        fmtDate(status?.last_rpi_calculation || newestRpi);
+      const latestCalculation = [status?.last_rpi_calculation, newestRpi]
+        .filter(Boolean)
+        .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
+        .at(-1);
+      els.lastCalc.textContent = fmtDate(latestCalculation);
     }
 
 
@@ -13630,6 +14138,13 @@
       els.reloadBtn.title = "Refreshing rankings";
 
       try {
+        try {
+          await loadLatestLoggedSnapshot();
+        } catch (snapshotErr) {
+          console.warn("Could not load latest logged RPI snapshot:", snapshotErr);
+          latestLoggedSnapshot = null;
+          latestLoggedSnapshotRows = [];
+        }
         const { data, error } = await supabase
           .from("sport_dashboard_current")
           .select(`
@@ -13904,7 +14419,7 @@
     els.splitEastBody.addEventListener("click", handleTeamHistoryCellClick);
     els.splitWestBody.addEventListener("click", handleTeamHistoryCellClick);
 
-    function openScheduleFromTeamId(teamId) {
+    function openScheduleFromTeamId(teamId, fromSchedule = false) {
       if (!teamId) return;
 
       const row = allRows.find(item =>
@@ -13912,43 +14427,81 @@
       );
 
       if (row) {
-        openTeamSchedule(row);
+        openTeamSchedule(row, { pushHistory:fromSchedule });
+      }
+    }
+
+    async function openScheduleFromNodeId(nodeId, fromSchedule = false) {
+      if (nodeId == null || nodeId === "") return;
+
+      try {
+        if (!gameExplorerLoaded || gameExplorerStale || !gameExplorerRows.length) {
+          const rows = await fetchAllGameExplorerRows();
+          gameExplorerRows = rows.map(decorateGameRow);
+          gameExplorerLoaded = true;
+          gameExplorerStale = false;
+          rebuildGameNodeRecords();
+        }
+
+        const game = gameExplorerRows.find(row =>
+          String(row.home_node_id) === String(nodeId) ||
+          String(row.away_node_id) === String(nodeId)
+        );
+        if (!game) return;
+
+        const side = String(game.home_node_id) === String(nodeId) ? "home" : "away";
+        const team = resolveGameSideTeam(game, side);
+        if (team) openTeamSchedule(team, { pushHistory:fromSchedule });
+      }
+      catch (err) {
+        showError(err);
       }
     }
 
     function handleOpenScheduleTarget(event) {
-      const target = event.target.closest("[data-open-team-schedule]");
+      const target = event.target.closest("[data-open-team-schedule], [data-open-sport-node-schedule]");
       if (!target) return;
 
       event.preventDefault();
       event.stopPropagation();
+      const fromSchedule = Boolean(target.closest("#teamScheduleList"));
 
-      openScheduleFromTeamId(
-        target.dataset.openTeamSchedule
-      );
+      if (target.dataset.openSportNodeSchedule) {
+        openScheduleFromNodeId(target.dataset.openSportNodeSchedule, fromSchedule);
+      } else {
+        openScheduleFromTeamId(target.dataset.openTeamSchedule, fromSchedule);
+      }
     }
 
     function handleOpenScheduleKey(event) {
       if (event.key !== "Enter" && event.key !== " ") return;
 
-      const target = event.target.closest("[data-open-team-schedule]");
+      const target = event.target.closest("[data-open-team-schedule], [data-open-sport-node-schedule]");
       if (!target) return;
 
       event.preventDefault();
       event.stopPropagation();
+      const fromSchedule = Boolean(target.closest("#teamScheduleList"));
 
-      openScheduleFromTeamId(
-        target.dataset.openTeamSchedule
-      );
+      if (target.dataset.openSportNodeSchedule) {
+        openScheduleFromNodeId(target.dataset.openSportNodeSchedule, fromSchedule);
+      } else {
+        openScheduleFromTeamId(target.dataset.openTeamSchedule, fromSchedule);
+      }
     }
 
     els.teamScheduleList.addEventListener("click", handleOpenScheduleTarget);
     els.teamScheduleList.addEventListener("keydown", handleOpenScheduleKey);
 
+    els.gameTableBody.addEventListener("contextmenu", openGameFinalEditor);
+    els.gameTableBody.addEventListener("keydown", event => {
+      if (event.key === "ContextMenu" || (event.shiftKey && event.key === "F10")) openGameFinalEditor(event);
+    });
     els.gameTableBody.addEventListener("click", handleOpenScheduleTarget);
     els.gameTableBody.addEventListener("keydown", handleOpenScheduleKey);
 
     els.teamScheduleClose.addEventListener("click", closeTeamSchedule);
+    els.teamScheduleBack.addEventListener("click", goBackInTeamSchedules);
 
     els.teamScheduleModal.addEventListener("click", event => {
       if (event.target === els.teamScheduleModal) {
@@ -14625,20 +15178,39 @@
       localStorage.setItem("brsnRpiShowLastChange", showLastChange ? "1" : "0");
       render();
     });
+    els.showLastNonzeroChangeToggle.checked = showLastNonzeroChange;
+    els.showLastNonzeroChangeToggle.addEventListener("change", () => {
+      showLastNonzeroChange = els.showLastNonzeroChangeToggle.checked;
+      localStorage.setItem("brsnRpiShowLastNonzeroChange", showLastNonzeroChange ? "1" : "0");
+      render();
+    });
 
-    function submitAdminKey() {
-      adminKey = els.adminSecret.value.trim();
-
-      if (!adminKey) {
-        sessionStorage.removeItem("nchsaaRpiAdminKey");
-        syncAdminAccessUi();
+    async function submitAdminKey() {
+      if (adminKeySubmitting) return;
+      const key = els.adminSecret.value.trim();
+      if (!key) {
+        els.adminLaunchHelp.textContent = "Enter the admin key to unlock admin actions.";
         els.adminSecret.focus();
         return;
       }
-
-      sessionStorage.setItem("nchsaaRpiAdminKey", adminKey);
-      clearError();
-      syncAdminAccessUi();
+      adminKeySubmitting = true;
+      els.saveAdminSecretBtn.disabled = true;
+      els.adminLaunchHelp.textContent = "Checking admin key…";
+      try {
+        await validateAndRememberAdminKey(key);
+        clearError();
+        const resume = pendingAdminAction;
+        if (resume) {
+          closeSettings();
+          resume();
+        }
+      } catch (err) {
+        els.adminLaunchHelp.textContent = err?.message || "Could not validate the admin key. Try again.";
+        els.adminSecret.focus();
+      } finally {
+        adminKeySubmitting = false;
+        els.saveAdminSecretBtn.disabled = false;
+      }
     }
 
     els.saveAdminSecretBtn.addEventListener("click", submitAdminKey);
