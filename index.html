@@ -11795,22 +11795,53 @@
     }
 
     function teamNameMatches(gameName, row) {
+      const candidate = normalizeTeamName(gameName);
+
+      if (!candidate) {
+        return false;
+      }
+
       const targetNames = [
         row.name,
         row.school_name
       ]
         .filter(Boolean)
-        .map(normalizeTeamName);
+        .map(normalizeTeamName)
+        .filter(Boolean);
 
-      const candidate = normalizeTeamName(gameName);
-
+      // Exact normalized-name matching only.
+      // The previous includes() fallback could incorrectly merge schools
+      // whose names contain one another (for example Lake Norman vs
+      // Lake Norman Charter). Known aliases should be handled by the
+      // existing nameNormalization overrides instead.
       return targetNames.some(target =>
-        target &&
-        (
-          candidate === target ||
-          candidate.includes(target) ||
-          target.includes(candidate)
-        )
+        candidate === target
+      );
+    }
+
+    function gameSideMatchesTeam(game, side, row) {
+      if (!game || !row || !side) {
+        return false;
+      }
+
+      const possibleIds = [
+        game[`${side}_team_id`],
+        game[`${side}_id`],
+        game[`${side}_sport_node_id`]
+      ]
+        .filter(value => value != null && value !== "")
+        .map(value => String(value));
+
+      if (
+        row.team_id != null &&
+        possibleIds.includes(String(row.team_id))
+      ) {
+        return true;
+      }
+
+      return teamNameMatches(
+        game[`${side}_name`],
+        row
       );
     }
 
@@ -11863,6 +11894,8 @@
       const name = game[`${side}_name`];
       if (!name) return null;
 
+      // Fallback only when the view did not supply a usable team ID.
+      // teamNameMatches is intentionally exact after normalization.
       return allRows.find(row =>
         teamNameMatches(name, row)
       ) || null;
@@ -11907,7 +11940,13 @@
       }
 
       els.teamScheduleList.innerHTML = games.map(game => {
-        const isHome = teamNameMatches(game.home_name, target);
+        const isHome = gameSideMatchesTeam(game, "home", target);
+        const isAway = gameSideMatchesTeam(game, "away", target);
+
+        if (!isHome && !isAway) {
+          return "";
+        }
+
         const opponentSide = isHome ? "away" : "home";
         const opponentTeam = resolveGameSideTeam(game, opponentSide);
         const opponentTeamId = opponentTeam?.team_id ?? "";
@@ -12068,8 +12107,8 @@
         }
 
         const games = sourceRows.filter(game =>
-          teamNameMatches(game.home_name, row) ||
-          teamNameMatches(game.away_name, row)
+          gameSideMatchesTeam(game, "home", row) ||
+          gameSideMatchesTeam(game, "away", row)
         );
 
         renderTeamScheduleGames(row, games);
