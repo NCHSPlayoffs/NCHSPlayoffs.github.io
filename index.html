@@ -11954,6 +11954,14 @@
         const opponentName =
           game[`${opponentSide}_name`] || "Unknown opponent";
 
+        const opponentRecord =
+          String(opponentTeam?.record || "").trim();
+
+        const opponentDisplayName =
+          opponentRecord
+            ? `${opponentName} (${opponentRecord})`
+            : opponentName;
+
         const opponentState =
           game[`${opponentSide}_state`] || "";
 
@@ -12025,7 +12033,7 @@
             </div>
 
             <div class="team-schedule-opponent">
-              <strong>${isHome ? "vs" : "@"} ${escapeHtml(opponentName)}</strong>
+              <strong>${isHome ? "vs" : "@"} ${escapeHtml(opponentDisplayName)}</strong>
               <span>
                 ${isHome ? "HOME" : "AWAY"}
                 ${opponentState ? ` • ${escapeHtml(opponentState)}` : ""}
