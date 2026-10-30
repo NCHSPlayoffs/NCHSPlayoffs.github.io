@@ -42,6 +42,11 @@
           <div class="compare-calendar-hint">A dot marks dates with saved logs.</div>
         </div>
       </div>
+      <button id="clearMovementComparison" type="button" hidden>Reset comparison</button>
+      <div class="nonzero-movement-control">
+        <div><input id="showNonzeroMovement" type="checkbox" aria-label="Show last nonzero rank and RPI change"><button id="openNonzeroMovements" type="button" title="Open latest nonzero RPI changes and timestamps">Show last nonzero change</button></div>
+        <small id="nonzeroMovementHint">Click the text to browse saved RPI changes.</small>
+      </div>
       <button id="reload" type="button">Refresh</button>
       <button id="download" type="button" class="primary">Download PNG</button>
       <button id="openExportStudio" type="button">Export Studio</button>
@@ -77,6 +82,10 @@
       <div id="exportQueue" class="export-queue" aria-live="polite"><div class="export-queue-empty">Choose classes and layout, then build exports.</div></div>
     </section>
   </div>
+  <dialog id="nonzeroMovementDialog" aria-labelledby="nonzeroMovementTitle">
+    <header><div><h2 id="nonzeroMovementTitle">Latest Nonzero RPI Changes</h2><p id="nonzeroMovementSubtitle"></p></div><button id="closeNonzeroMovements" type="button" aria-label="Close latest nonzero changes">×</button></header>
+    <div class="movement-dialog-body"><div class="movement-dialog-filters"><label>Class<select id="nonzeroMovementClass"><option value="ALL">ALL classes</option></select></label><label>Find a team<input id="nonzeroMovementSearch" type="search" placeholder="Search team name"></label></div><p id="nonzeroMovementNote"></p><div class="movement-table-wrap"><table><thead><tr><th>Team</th><th>Class</th><th>Current RPI</th><th>Last RPI change</th><th>Last regional rank change</th><th>RPI change saved at · Eastern</th></tr></thead><tbody id="nonzeroMovementRows"></tbody></table></div></div>
+  </dialog>
   <script type="module" src="playoff-picture.js"></script>
 </body>
 </html>
