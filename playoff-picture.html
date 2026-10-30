@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NCHSAA Playoff Picture</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700;800&family=Goldman:wght@400;700&family=Russo+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="playoff-picture.css">
+  <link rel="stylesheet" href="playoff-card-base.css">
+  <link rel="stylesheet" href="playoff-card.css">
+</head>
+<body>
+  <main class="page-shell">
+    <header class="page-header">
+      <div><div class="eyebrow">BRSN · LIVE RPI</div><h1>Playoff Picture</h1><p>Seeded from the project’s current RPI table and compared with its saved snapshot history.</p></div>
+      <a class="back-link" href="index.html">← Admin panel</a>
+    </header>
+    <section class="controls" aria-label="Playoff picture controls">
+      <label>Sport<select id="sport"><option value="football">Football</option></select></label>
+      <label>Season<select id="season"></select></label>
+      <label>Class<select id="classification"></select></label>
+      <label>Region<select id="region"><option value="west">West</option><option value="east">East</option></select></label>
+      <div class="compare-control">
+        <label for="comparison">Compare movement</label>
+        <div class="compare-control-inputs">
+          <button id="compareCalendarButton" type="button" aria-label="Choose comparison date" title="Choose comparison date" aria-expanded="false" aria-controls="compareCalendar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg>
+          </button>
+          <input id="compareDate" type="hidden">
+          <select id="comparison" aria-label="Choose a saved RPI log by date and refresh type"></select>
+        </div>
+        <div id="compareCalendar" class="compare-calendar" role="dialog" aria-label="Choose comparison date" hidden>
+          <div class="compare-calendar-head">
+            <button type="button" data-calendar-month="-1" aria-label="Previous month">‹</button>
+            <strong id="compareCalendarMonth" aria-live="polite"></strong>
+            <button type="button" data-calendar-month="1" aria-label="Next month">›</button>
+          </div>
+          <div class="compare-calendar-weekdays" aria-hidden="true"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+          <div id="compareCalendarDays" class="compare-calendar-days"></div>
+          <div class="compare-calendar-hint">A dot marks dates with saved logs.</div>
+        </div>
+      </div>
+      <button id="reload" type="button">Refresh</button>
+      <button id="download" type="button" class="primary">Download PNG</button>
+      <button id="openExportStudio" type="button">Export Studio</button>
+    </section>
+    <p id="status" class="status" role="status" aria-live="polite">Connecting to live RPI…</p>
+    <section class="preview-frame" aria-label="Playoff picture preview">
+      <div id="graphic" class="sports-graphic card-playoff-board" data-region="west" data-background-sport="football" data-surface="turf"></div>
+    </section>
+  </main>
+  <div id="exportStudio" class="export-studio-backdrop" hidden>
+    <section class="export-studio" role="dialog" aria-modal="true" aria-labelledby="exportStudioTitle">
+      <header class="export-studio-head">
+        <h2 id="exportStudioTitle">Export Studio</h2>
+        <div class="export-progress"><span id="exportProgressText">0 / 0 rendered</span><div class="export-progress-track"><span id="exportProgressBar"></span></div></div>
+        <button id="exportDownloadAll" type="button" disabled>Download All</button>
+        <button id="closeExportStudio" class="export-close" type="button" aria-label="Close Export Studio">×</button>
+      </header>
+      <div class="export-studio-controls">
+        <label>Classes<select id="exportClassMode"><option value="all">All Classes</option><option value="current">Current Class Only</option><option value="choose">Choose Classes</option></select></label>
+        <label>Sport<select id="exportSport"></select></label>
+        <label>View Type<select disabled><option>Playoff Picture Only</option></select></label>
+        <label>File format<select disabled><option>PNG · Lossless</option></select></label>
+        <label>Playoff layout<select id="exportLayout"><option value="both">East/West Playoff Picture</option><option value="west">West Playoff Picture</option><option value="east">East Playoff Picture</option></select></label>
+        <button id="buildExports" class="build-exports" type="button">Build Exports</button>
+        <div id="exportClassChoices" class="export-class-choices" hidden></div>
+      </div>
+      <div class="export-folder-row">
+        <label><input id="saveDatedFolder" type="checkbox" checked> Save in dated folder</label>
+        <span id="exportFolderName">ZIP exports will be saved by the browser</span>
+        <button id="browseExportFolder" type="button">Browse Folder</button>
+      </div>
+      <div class="export-queue-head"><strong>Export queue</strong><button id="clearExportQueue" type="button">Clear</button></div>
+      <div id="exportQueue" class="export-queue" aria-live="polite"><div class="export-queue-empty">Choose classes and layout, then build exports.</div></div>
+    </section>
+  </div>
+  <script type="module" src="playoff-picture.js"></script>
+</body>
+</html>

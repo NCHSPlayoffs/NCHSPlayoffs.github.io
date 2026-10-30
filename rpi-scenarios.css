@@ -1,0 +1,58 @@
+#rpiScenarioDialog{box-sizing:border-box;width:min(1080px,calc(100vw - 24px));max-height:92vh;overflow:auto;padding:0;border:1px solid #3c5368;border-radius:16px;background:#101820;color:#e8eff7;box-shadow:0 24px 90px #000b;font-size:14px}
+#rpiScenarioDialog::backdrop{background:#030810c9;backdrop-filter:blur(4px)}
+#rpiScenarioDialog *{box-sizing:border-box}
+#rpiScenarioDialog header{display:flex;align-items:start;justify-content:space-between;gap:16px;padding:22px 24px;background:#192735;border-bottom:1px solid #35495b}
+#rpiScenarioDialog h2{font-size:22px;margin:5px 0}#rpiScenarioDialog h3{margin:20px 0 12px;font-size:17px}
+#rpiScenarioDialog header>[data-action=close]{flex:0 0 36px;width:36px;min-width:36px;padding:6px}
+#rpiScenarioDialog .scenario-tag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#83d9c6}
+#rpiScenarioDialog .scenario-body{padding:20px 24px}#rpiScenarioDialog p{line-height:1.6;margin:8px 0 16px}
+#rpiScenarioDialog .scenario-muted{color:#a9bdce;font-size:12px}
+#rpiScenarioDialog .scenario-controls{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+#rpiScenarioDialog label{display:block;font-size:12px;color:#b7ccdd;flex:1;min-width:150px}
+#rpiScenarioDialog select,#rpiScenarioDialog input{display:block;width:100%;min-height:40px;margin-top:6px;padding:8px 10px;border:1px solid #40566a;border-radius:8px;background:#18232e;color:#eef6ff;font:inherit}
+#rpiScenarioDialog button{height:auto;min-height:38px;white-space:normal;padding:9px 14px;border:1px solid #3e596e;border-radius:8px;background:#203548;color:#eaf4ff;font:inherit;cursor:pointer}
+#rpiScenarioDialog button:disabled{opacity:.45;cursor:wait}
+#rpiScenarioDialog button:focus-visible,#rpiScenarioDialog select:focus-visible{outline:2px solid #6dcbb5;outline-offset:3px}
+#rpiScenarioDialog .scenario-primary{background:#176354;border-color:#4aab93}
+#rpiScenarioDialog .scenario-game{display:grid;grid-template-columns:minmax(0,1fr) minmax(160px,280px);align-items:center;gap:12px;padding:14px 16px;margin:9px 0;border:1px solid #304759;border-radius:10px;background:#17232e}
+#rpiScenarioDialog .scenario-game strong{display:block;line-height:1.5}#rpiScenarioDialog .scenario-game select{margin:0}
+#rpiScenarioDialog .scenario-steps{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}#rpiScenarioDialog .scenario-steps button[aria-current=step]{border-color:#79d4bc;color:#8ce3cd}
+#rpiScenarioDialog .scenario-summary{padding:16px;border:1px solid #467c6e;background:#152e2b;border-radius:10px;line-height:1.7}
+#rpiScenarioDialog .scenario-warning{color:#ffd58a;border-left:3px solid #b78a40;padding:8px 12px;background:#30271b}
+#rpiScenarioDialog .scenario-table{overflow:auto;border:1px solid #35495b;border-radius:10px;margin:16px 0}
+#rpiScenarioDialog table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:13px}
+#rpiScenarioDialog th,#rpiScenarioDialog td{padding:11px 12px;text-align:right;border-bottom:1px solid #304353}#rpiScenarioDialog th{background:#1b2b39;color:#a9c0d3;font-size:11px}
+#rpiScenarioDialog td:first-child,#rpiScenarioDialog th:first-child{text-align:left}#rpiScenarioDialog tr.scenario-selected{background:#153d36}
+#rpiScenarioDialog .scenario-team{padding:0;min-height:24px;border:0;background:none;text-align:left;text-decoration:underline;color:#b5dcff}
+#rpiScenarioDialog details{margin:16px 0}#rpiScenarioDialog summary{cursor:pointer;color:#b8d5eb;padding:8px 0}
+#rpiScenarioDialog .scenario-extremes{padding:16px;margin:16px 0;border:1px solid #405b73;border-radius:10px;background:#172735}
+#rpiScenarioDialog .scenario-extremes p{margin:6px 0 12px}
+#rpiScenarioDialog .scenario-extreme-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+#rpiScenarioDialog [data-action=best]{background:#20584d;border-color:#518e7d}
+#rpiScenarioDialog [data-action=worst]{background:#603634;border-color:#97605a}
+#rpiScenarioDialog .scenario-lock{display:flex;align-items:center;gap:8px;min-width:0;margin:10px 0;font-size:13px}
+#rpiScenarioDialog .scenario-lock input{width:17px;height:17px;min-height:17px;flex:0 0 17px;margin:0;padding:0;accent-color:#70cdb6}
+#rpiScenarioDialog .scenario-optimization{padding:14px 16px;border-left:3px solid #72cdb5;background:#192e2d;font-size:13px}
+.scenario-stat-up{color:#5cf0aa!important;font-weight:800}
+.scenario-stat-down{color:#ff6b79!important;font-weight:800}
+#reloadBtn.scenario-reset-button{width:150px!important;min-width:145px!important;padding:0 14px!important;color:#b8efd9;border-color:#518e7d;font-size:12px;white-space:nowrap}
+.table-controls:has(#reloadBtn.scenario-reset-button){--standings-action-width:150px}
+#rpiScenarioDialog .scenario-team-breakdown{border:1px solid #354e62;border-radius:10px;background:#16232e;overflow:hidden;margin:12px 0}
+#rpiScenarioDialog .scenario-team-breakdown>summary{padding:14px 16px;line-height:1.5}
+#rpiScenarioDialog .scenario-team-breakdown>summary>strong{color:#e4f1fc;overflow-wrap:anywhere}
+#rpiScenarioDialog .scenario-team-breakdown>summary>span{display:block;margin-left:16px;color:#a9bdce;font-size:12px}
+#rpiScenarioDialog .scenario-breakdown-content{padding:0 16px 16px}
+#rpiScenarioDialog .scenario-component-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:5px 0 12px}
+#rpiScenarioDialog .scenario-component-grid>div{padding:10px;background:#101b24;border:1px solid #304658;border-radius:7px}
+#rpiScenarioDialog .scenario-component-grid span{display:block;font-size:10px;color:#a9bdce;margin-bottom:5px}
+#rpiScenarioDialog .scenario-component-grid strong{display:block;font-size:12px;line-height:1.7;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#rpiScenarioDialog .scenario-result-list{list-style:none;padding:0;margin:12px 0}
+#rpiScenarioDialog .scenario-result-list li{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid #304658}
+#rpiScenarioDialog .scenario-result-list b{font-size:19px;min-width:22px}
+#rpiScenarioDialog .scenario-result-list strong{font-size:13px;overflow-wrap:anywhere}
+#rpiScenarioDialog .scenario-result-list small{display:block;color:#a9bdce;font-size:11px;line-height:1.7;margin-top:4px}
+#rpiScenarioDialog .scenario-opponent-group{margin:16px 0 20px}
+#rpiScenarioDialog .scenario-second-degree{margin:-4px 0 0 18px;padding-left:14px;border-left:2px solid #365468}
+#rpiScenarioDialog .scenario-second-degree>summary{font-size:12px;line-height:1.6}
+@media(max-width:600px){#rpiScenarioDialog .scenario-component-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#rpiScenarioDialog .scenario-second-degree{margin-left:6px;padding-left:8px}}
+@media(max-width:600px){#rpiScenarioDialog header,#rpiScenarioDialog .scenario-body{padding:16px}#rpiScenarioDialog .scenario-game{grid-template-columns:1fr}#rpiScenarioDialog .scenario-controls label{min-width:100%}}

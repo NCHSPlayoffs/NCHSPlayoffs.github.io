@@ -1,0 +1,82 @@
+*{box-sizing:border-box}body{margin:0;background:#0c1117;color:#f1f4f7;font:15px/1.45 Inter,Segoe UI,Arial,sans-serif}.page-shell{width:min(1760px,calc(100% - 32px));margin:28px auto 60px}.page-header{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:20px}.eyebrow{color:#e24b5b;font-size:12px;font-weight:900;letter-spacing:.18em}.page-header h1{margin:4px 0;font-size:clamp(28px,4vw,42px);line-height:1.1}.page-header p{color:#9caaba;margin:0}.back-link{color:#e6edf5;text-decoration:none;border:1px solid #344152;background:#171f29;border-radius:8px;padding:10px 14px;font-weight:800;white-space:nowrap}.controls{display:flex;flex-wrap:wrap;align-items:end;gap:10px;padding:14px;border:1px solid #2e3947;border-radius:12px;background:#141b24}.controls label{display:grid;gap:5px;min-width:130px;color:#aeb9c7;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}.controls select,.controls button{height:40px;border:1px solid #394859;border-radius:7px;background:#10161e;color:#f4f6f8;padding:0 11px;font:700 14px/1.2 Inter,Segoe UI,Arial,sans-serif}.controls button{cursor:pointer;padding:0 16px}.controls button:hover{border-color:#91a3b8}.controls button.primary{border-color:#c33143;background:linear-gradient(#db4052,#991e30);color:white}.controls button:disabled{opacity:.55;cursor:wait}.controls .compare-label{min-width:230px;flex:1}.status{min-height:22px;color:#a9b5c3;font-size:13px;margin:11px 3px}.status.error{color:#ff8993}.preview-frame{overflow:auto;border:1px solid #303b49;border-radius:10px;background:#070a0e;padding:14px}.preview-frame #graphic{margin:0 auto;zoom:min(1,calc((100vw - 80px)/1600))}.sports-graphic .graphic-footer{white-space:normal}.page-shell .sports-graphic.card-playoff-board .card-playoff-team{cursor:default}.playoff-picture-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;white-space:nowrap}@media(max-width:700px){.page-shell{width:calc(100% - 16px);margin:12px auto}.page-header{align-items:flex-start}.page-header p{max-width:440px}.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:10px}.controls label,.controls .compare-label{min-width:0}.controls button{width:100%}.preview-frame{padding:8px}.preview-frame #graphic{transform-origin:top left}.back-link{padding:8px 10px}}
+
+.controls .compare-date-label{min-width:170px}
+.controls input[type=date]{height:40px;min-width:0;border:1px solid #394859;border-radius:7px;background:#10161e;color:#f4f6f8;padding:0 10px;font:700 14px/1.2 Inter,Segoe UI,Arial,sans-serif}
+.card-playoff-record{display:flex;align-items:center;justify-content:center;gap:8px}
+.card-playoff-last-result{color:#080b10;font-size:.72em;font-weight:900;line-height:1;text-shadow:0 1px #fff}
+@media(max-width:700px){.controls .compare-date-label{min-width:0}.controls input[type=date]{width:100%}}
+.compare-control{position:relative;display:grid;gap:5px;min-width:300px;flex:1 1 360px;margin:0;padding:0}
+.compare-control-inputs{display:flex;align-items:center;height:40px;min-width:0;border:1px solid #394859;border-radius:7px;background:#10161e}
+.compare-control-inputs:focus-within{border-color:#8ba8c7}
+.controls #compareCalendarButton{display:flex;align-items:center;justify-content:center;flex:0 0 40px;width:40px;height:38px;padding:0;border:0;border-right:1px solid #394859;border-radius:6px 0 0 6px;color:#bccfe3;background:transparent}
+.controls #compareCalendarButton:hover,.controls #compareCalendarButton[aria-expanded=true]{background:#29394d;color:#fff}
+.compare-control select{flex:1 1 auto;width:100%;height:38px;min-width:0;border:0;border-radius:0 6px 6px 0;background:#10161e;color:#f4f6f8;padding:0 8px;font:700 13px/1.2 Inter,Segoe UI,Arial,sans-serif}
+.compare-calendar{position:absolute;top:calc(100% + 8px);left:0;z-index:100;width:min(306px,100%);padding:12px;border:1px solid #4d6076;border-radius:10px;background:#17212d;box-shadow:0 12px 32px #0009}
+.compare-calendar[hidden]{display:none}
+.compare-calendar-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.controls .compare-calendar-head button{width:32px;height:32px;padding:0;font-size:22px}
+.compare-calendar-weekdays,.compare-calendar-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;text-align:center}
+.compare-calendar-weekdays{margin-bottom:6px;color:#a9bbcf;font-size:11px}
+.controls .compare-calendar-days button{position:relative;width:100%;height:34px;padding:0;border:1px solid transparent;background:transparent;font-size:12px}
+.controls .compare-calendar-days button:hover{background:#31465f;border-color:#7c9bc0}
+.controls .compare-calendar-days button[aria-pressed=true]{background:#2866a5;border-color:#91bff0}
+.compare-calendar-days button.has-logs:after{content:'';position:absolute;bottom:3px;left:calc(50% - 2px);width:4px;height:4px;border-radius:50%;background:#91c4fb}
+.compare-calendar-hint{margin-top:10px;color:#a9bbcf;font-size:11px}
+.playoff-picture-link{display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;white-space:nowrap}
+.batch-export{margin-top:10px;border:1px solid #303b49;border-radius:10px;background:#141b24;color:#eaf0f6}
+.batch-export summary{padding:11px 14px;color:#dce5ee;font-weight:800;cursor:pointer}
+.batch-export-content{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:4px 14px 14px}
+.batch-export-content fieldset{min-width:180px;margin:0;padding:6px 10px 9px;border:1px solid #394859;border-radius:8px}
+.batch-export-content legend{padding:0 5px;color:#aeb9c7;font-size:12px;font-weight:800;text-transform:uppercase}
+.batch-options{display:flex;flex-wrap:wrap;gap:7px 12px}
+.batch-options label{display:flex;align-items:center;gap:5px;font-size:13px}
+.batch-options input{accent-color:#d63a4e}
+.batch-export-content button{height:36px;padding:0 12px;border:1px solid #445264;border-radius:7px;background:#202a36;color:#f4f6f8;font-weight:800;cursor:pointer}
+.batch-export-content button.primary{border-color:#c33143;background:linear-gradient(#db4052,#991e30)}
+.batch-export-content button:disabled{opacity:.55;cursor:wait}
+.batch-export-content .text-button{height:auto;padding:3px 0;border:0;background:none;color:#98bbf0;font-size:12px}
+.batch-hint{flex:1 1 180px;color:#9caaba;font-size:12px}
+@media(max-width:700px){.compare-control{min-width:0;grid-column:span 2}.batch-export-content{align-items:stretch}.batch-export-content fieldset,.batch-export-content button{width:100%}}
+
+.export-studio-backdrop{position:fixed;inset:0;z-index:10000;background:#070a0dcc;display:flex;align-items:stretch;justify-content:center}
+.export-studio-backdrop[hidden]{display:none}
+.export-studio{width:min(1500px,100%);height:100%;display:flex;flex-direction:column;overflow:hidden;background:#171b1e;color:#eef2f4;border:1px solid #41494e;box-shadow:0 24px 90px #000a;font:14px/1.35 Inter,Segoe UI,Arial,sans-serif}
+.export-studio-head{min-height:76px;display:grid;grid-template-columns:minmax(180px,1fr) 150px 120px 42px;gap:16px;align-items:center;padding:12px 20px;border-bottom:1px solid #3b4348}
+.export-studio-head h2{margin:0;font-size:23px;font-weight:800}
+.export-progress{display:grid;gap:5px;color:#c5ced2;font-size:12px}
+.export-progress-track{height:4px;background:#31393e;border-radius:4px;overflow:hidden}
+.export-progress-track span{display:block;width:0;height:100%;background:#55bd8d;transition:width .2s ease}
+.export-studio-head button,.export-studio-controls button,.export-folder-row button,.export-queue-head button,.export-queue-row button{height:38px;padding:0 13px;border:1px solid #4a555b;border-radius:4px;background:#282f33;color:#edf2f4;font-weight:800;cursor:pointer}
+.export-studio-head button:disabled,.export-studio-controls button:disabled,.export-queue-row button:disabled{opacity:.45;cursor:default}
+.export-studio-head .export-close{width:38px;height:38px;padding:0;font-size:23px}
+.export-studio-controls{display:grid;grid-template-columns:repeat(5,minmax(130px,1fr)) auto;gap:14px;align-items:end;padding:18px 20px;border-bottom:1px solid #3b4348}
+.export-studio-controls label{display:grid;gap:6px;min-width:0;color:#bdc8ce;font-size:12px;font-weight:700}
+.export-studio-controls select,.export-class-choices{width:100%;height:40px;min-width:0;border:1px solid #4b5960;border-radius:4px;background:#252d32;color:#f1f4f6;padding:0 10px;font:700 13px Inter,Segoe UI,Arial,sans-serif}
+.export-studio-controls select:disabled{opacity:1;color:#f1f4f6}
+.export-studio-controls .build-exports{background:#1e4539;border-color:#2b7058;white-space:nowrap}
+.export-class-choices{grid-column:1/-1;height:auto;max-height:110px;display:flex;flex-wrap:wrap;gap:8px 18px;overflow:auto;padding:9px 10px}
+.export-class-choices[hidden]{display:none}
+.export-class-choices label{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.export-class-choices input{accent-color:#55bd8d}
+.export-folder-row{min-height:60px;display:flex;align-items:center;gap:16px;padding:10px 20px;background:#20272b;border-bottom:1px solid #3b4348;color:#c1cbd0;font-size:12px}
+.export-folder-row>label{display:flex;align-items:center;gap:8px;color:#eef2f4;font-weight:800;white-space:nowrap}
+.export-folder-row input{accent-color:#55bd8d}
+.export-folder-row>span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.export-queue-head{display:flex;justify-content:space-between;align-items:center;padding:13px 20px 8px;color:#c8d0d4}
+.export-queue-head button{height:30px;border:0;background:transparent}
+.export-queue{flex:1;min-height:0;overflow:auto;padding:0 20px 14px}
+.export-queue-empty{padding:28px 0;color:#9ba8ae}
+.export-queue-row{min-height:68px;display:grid;grid-template-columns:minmax(210px,34%) minmax(200px,1fr) 86px 100px;gap:14px;align-items:center;border-bottom:1px solid #394247}
+.export-queue-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:800}
+.export-queue-row input{width:100%;height:38px;min-width:0;border:1px solid #526067;border-radius:4px;background:#252d32;color:#eef2f4;padding:0 10px;font:700 13px Inter,Segoe UI,Arial,sans-serif}
+.export-queue-status{display:flex;align-items:center;gap:7px;white-space:nowrap;color:#c3cdd1;font-size:12px}
+.export-queue-status::before{content:'';width:6px;height:6px;border-radius:50%;background:#849198}
+.export-queue-status[data-state="rendered"]::before{background:#55bd8d}
+.export-queue-status[data-state="error"]{color:#ff9ba3}
+.export-queue-status[data-state="error"]::before{background:#ed5a67}
+.export-queue-row button{height:36px}
+@media(max-width:900px){.export-studio-controls{grid-template-columns:repeat(3,minmax(125px,1fr))}.export-studio-controls .build-exports{width:100%}.export-queue-row{grid-template-columns:minmax(140px,1fr) minmax(180px,1fr) 76px 90px;gap:8px}}
+@media(max-width:620px){.export-studio-head{grid-template-columns:1fr auto auto;gap:8px;padding:9px 12px}.export-progress{grid-column:1;grid-row:2}.export-studio-head #exportDownloadAll{grid-column:2;grid-row:1/3}.export-studio-head .export-close{grid-column:3;grid-row:1/3}.export-studio-controls{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:12px}.export-studio-controls .build-exports{grid-column:span 2}.export-folder-row{padding:8px 12px;gap:8px}.export-folder-row>label{white-space:normal}.export-queue{padding:0 12px 12px}.export-queue-head{padding-inline:12px}.export-queue-row{grid-template-columns:minmax(0,1fr) 80px;gap:6px;padding:9px 0}.export-queue-title{grid-column:1}.export-queue-row input{grid-column:1;grid-row:2}.export-queue-status{grid-column:2;grid-row:1}.export-queue-row button{grid-column:2;grid-row:2}}
+
+/* Static hosting provides the live viewer without the local PNG renderer. */
+.static-playoff-view #download,.static-playoff-view #openExportStudio{display:none!important}

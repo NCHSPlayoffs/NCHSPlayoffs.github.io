@@ -5839,7 +5839,7 @@
       </div>
 
       <div class="header-actions">
-        <a class="admin-btn map-btn playoff-picture-link" href="http://127.0.0.1:8136/" title="Open the playoff picture and PNG export"><span aria-hidden="true">🏆</span><span>Playoff Picture</span></a>
+        <a class="admin-btn map-btn playoff-picture-link" href="playoff-picture.html" title="Open the playoff picture"><span aria-hidden="true">🏆</span><span>Playoff Picture</span></a>
         <button id="eastWestMapBtn" class="admin-btn map-btn" type="button" aria-label="Open East/West line map" title="East/West line map">🗺 Map</button>
         <button id="settingsBtn" class="admin-btn settings-btn" type="button" aria-label="RPI settings" title="RPI settings">⚙</button>
 
@@ -13881,13 +13881,15 @@
 
     document.querySelector(".playoff-picture-link")?.addEventListener("click", event => {
       const link = event.currentTarget;
-      const target = new URL(link.href, window.location.href);
+      const localPage=location.protocol==='file:' || ['localhost','127.0.0.1'].includes(location.hostname);
+      const target = new URL(localPage?'http://127.0.0.1:8136/':'playoff-picture.html', window.location.href);
       target.searchParams.set("nameNormalization", JSON.stringify(nameNormalization));
       target.searchParams.set("oddMiddleSide", oddMiddleSide);
       link.href = target.href;
     });
 
     async function syncNormalizationRulesToPlayoffHelper() {
+      if(location.protocol!=='file:' && !['localhost','127.0.0.1'].includes(location.hostname))return;
       try {
         await fetch("http://127.0.0.1:8136/name-normalization", {
           method: "POST",

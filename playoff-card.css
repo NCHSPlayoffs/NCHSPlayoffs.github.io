@@ -1,0 +1,218 @@
+/* v45 concept adapted from 1800px to the existing 1600px/4:5 canvas.
+   Remove this stylesheet link to restore the preceding card design.
+   Header, table background, live data, and export geometry stay in sports-graphic.css. */
+/* Avoid blurring an entire tall board while the loading spinner is animated. */
+body .table-card.is-loading .board-loading-overlay { backdrop-filter: none; }
+body .sports-graphic.card-playoff-board {
+  --card-height: 200px;
+  --card-silver-gradient: linear-gradient(#fff 18%,#f4f6f8 45%,#a6afb7 52%,#e8edf1 88%);
+  --card-row-gap: 12px;
+  --card-rank-change-x: -9px;
+  --card-rank-dash-x: 0px;
+  --card-stat-label-gap: 10px;
+  /* Horizontal lines between stat labels and values (length accepts % or px). */
+  --card-stat-divider-length: 100%;
+  --card-stat-divider-thickness: 2px;
+  --card-connector-gap: 190px;
+  --card-column-width: 437px;
+  /* Set to 0px to restore the plain T-shaped connector. */
+  --card-connector-cap-length: 18px;
+  --card-matchup-gap: 11px;
+  --card-logo-width: 126px;
+  --card-logo-height: 110px;
+  --card-logo-x: 0px;
+  --card-logo-y: 0px;
+  --card-copy-x: 5px;
+  --card-copy-y: 0px;
+  --card-copy-long-x: var(--card-copy-x);
+  --card-copy-long-y: var(--card-copy-y);
+  --card-copy-xlong-x: var(--card-copy-x);
+  --card-copy-xlong-y: var(--card-copy-y);
+}
+/* Keep card widths stable; cap the connector gap to the available canvas space. */
+body .sports-graphic.card-playoff-board .card-playoff-row,
+body .sports-graphic.card-playoff-board .card-playoff-heads {
+  grid-template-columns: var(--card-column-width)
+    clamp(0px, var(--card-connector-gap), calc(100% - 3 * var(--card-column-width) - var(--card-matchup-gap)))
+    var(--card-column-width) var(--card-matchup-gap) var(--card-column-width);
+  justify-content: center;
+}
+body .sports-graphic.card-playoff-board .card-playoff-regions,
+body.sports-graphic-export .sports-graphic.card-playoff-board .card-playoff-regions {
+  flex: 1 1 0; min-height: min-content;
+}
+body .sports-graphic.card-playoff-board > .excluded-teams-note {
+  flex: none; font-size: 22px; line-height: 1.15; margin: 4px 10px 0;
+  text-shadow: none;
+}
+body .sports-graphic.card-playoff-board > .placeholder-record-note {
+  flex: none; font-size: 20px; line-height: 1.15; margin: 4px 10px 0;
+  text-shadow: none;
+}
+body .sports-graphic.card-playoff-board .card-playoff-note-slot .odd-extra-note {
+  text-shadow: 0 0 12px rgba(255,255,255,.22);
+}
+/* Recover note spacing before sacrificing any card height. */
+body .sports-graphic.card-playoff-board:has(> .excluded-teams-note) .card-playoff-note-slot:has(.odd-extra-note) {
+  height: 52px; flex-basis: 52px;
+}
+body .sports-graphic.card-playoff-board:has(> .excluded-teams-note) .card-playoff-note-slot .odd-extra-note {
+  margin-block: 2px; padding-block: 4px;
+}
+body .sports-graphic.card-playoff-board .card-playoff-team,
+body.performance-mode .sports-graphic.card-playoff-board .card-playoff-team {
+  border: 2px solid #8f979f;
+  border-radius: 15px;
+  background: linear-gradient(100deg,color-mix(in srgb,var(--team-accent) 68%,#171d24),color-mix(in srgb,var(--team-accent) 42%,#131920) 27%,color-mix(in srgb,var(--team-accent) 18%,#131920) 58%,#0e1318) !important;
+  box-shadow: 0 3px 8px #0008,inset 0 0 0 3px #07090c;
+}
+body .sports-graphic.card-playoff-board .card-playoff-team::before {
+  inset: 4px; border: 2px solid color-mix(in srgb,var(--team-accent) 74%,#77808a);
+  border-left: 4px solid color-mix(in srgb,var(--team-accent) 88%,#808993);
+  border-radius: 11px; box-shadow: inset 0 0 0 1px #ffffff12; z-index: 8;
+}
+body .sports-graphic.card-playoff-board .card-playoff-team::after {
+  content: ''; position: absolute; inset: 7px auto 7px 7px; width: 27px;
+  background: linear-gradient(90deg,color-mix(in srgb,var(--team-accent) 48%,transparent),transparent);
+  border-radius: 9px 0 0 9px; z-index: 1; pointer-events: none;
+}
+body .sports-graphic.card-playoff-board .card-playoff-rank,
+body .sports-graphic.card-playoff-board .card-playoff-team:is(.odd-extra-east,.odd-extra-west) .card-playoff-rank {
+  left: 11px; top: 7px; width: 64px; height: 93px; max-height: none;
+  grid-template-rows: 57px 36px; border: 0; border-radius: 9px 0 0 0;
+  clip-path: polygon(0 0,100% 0,100% 84%,88% 100%,0 100%);
+  background: linear-gradient(105deg,color-mix(in srgb,var(--rank-accent) 15%,#171d24),#11171d 68%,#0e1318);
+  box-shadow: inset -9px 0 16px #0003;
+}
+body .sports-graphic.card-playoff-board .card-playoff-rank-edge {
+  position: absolute; inset: 0; width: 100%; height: 100%; z-index: 9; pointer-events: none;
+}
+body .sports-graphic.card-playoff-board .card-playoff-rank-edge path {
+  fill: none; stroke: color-mix(in srgb,var(--rank-accent,var(--team-accent)) 78%,#66717b);
+  stroke-width: 2; vector-effect: non-scaling-stroke; stroke-linecap: square; stroke-linejoin: miter;
+}
+body .sports-graphic.card-playoff-board .card-playoff-rank-number {
+  font: 50px/.95 'Anton',sans-serif; color: #f3f4f5;
+  background: var(--card-silver-gradient); background-clip: text; -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 0 #47515b) drop-shadow(0 3px 3px #0009);
+  text-shadow: none;
+  display: flex; align-items: center; justify-content: center; border: 0;
+}
+body .sports-graphic.card-playoff-board .card-playoff-team .card-playoff-move {
+  background: linear-gradient(#00000005,#0003); box-shadow: none;
+  border-top: 1px solid #d4dce46b; font: 27px/1 'Anton',sans-serif;
+}
+body .sports-graphic.card-playoff-board .card-playoff-move > * {
+  position: relative; left: var(--card-rank-change-x);
+}
+body .sports-graphic.card-playoff-board [data-move="zero"] .card-playoff-move > * {
+  left: var(--card-rank-dash-x);
+}
+body .sports-graphic.card-playoff-board .card-playoff-hero {
+  left: 73px; right: 9px; top: 6px; height: 117px; display: block;
+}
+body .sports-graphic.card-playoff-board .card-playoff-logo-wrap {
+  position: absolute; left: 0; top: 2px; width: 126px; height: 110px; z-index: 0;
+}
+body .sports-graphic.card-playoff-board .card-playoff-copy {
+  position: absolute; left: 126px; right: 14px; top: 9px; z-index: 1;
+}
+body .sports-graphic.card-playoff-board .card-playoff-school {
+  font: 32px/1.08 'Anton',sans-serif; max-height: 2.16em;
+  letter-spacing: .5px;
+  background: var(--card-silver-gradient); background-clip: text; -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; text-shadow: none;
+  background-size: 100% 1.08em; background-repeat: repeat-y;
+  filter: drop-shadow(0 2px 0 #47515b) drop-shadow(0 3px 3px #0009);
+}
+body .sports-graphic.card-playoff-board .card-playoff-school.long { font-size: 32px; }
+body .sports-graphic.card-playoff-board .card-playoff-school.xlong { font-size: 32px; }
+body .sports-graphic.card-playoff-board .card-playoff-mascot {
+  margin-top: 0; font: 700 22px/1 'Barlow Condensed',sans-serif;
+  color: #d1d6dc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+body .sports-graphic.card-playoff-board .card-playoff-stats {
+  left: 9px; right: 9px; bottom: 8px; height: 69px; z-index: 4;
+  clip-path: none; grid-template-columns: 1fr 1fr 1.22fr;
+  background: linear-gradient(#f6f7f8,#dce1e6);
+  border: 1px solid #b5bdc6; border-top: 2px solid #aeb6be;
+  border-radius: 0 0 8px 8px; overflow: hidden;
+}
+body .sports-graphic.card-playoff-board .card-playoff-stat {
+  display: grid; grid-template-rows: 23px minmax(0,1fr); align-items: center; justify-items: center;
+  gap: var(--card-stat-label-gap);
+  padding: 2px 4px 4px; position: relative;
+}
+body .sports-graphic.card-playoff-board .card-playoff-stat + .card-playoff-stat { border-left: 0; }
+body .sports-graphic.card-playoff-board .card-playoff-stat::after { content: none; }
+body .sports-graphic.card-playoff-board .card-playoff-stat:not(:last-child)::after {
+  content: ''; position: absolute; top: 8px; bottom: 8px; right: -1px; left: auto; width: 2px; height: auto;
+  background: #8d99a5;
+}
+body .sports-graphic.card-playoff-board .card-playoff-stat > span:first-child {
+  top: 0; width: 100%; height: auto; flex: none; text-align: center;
+  font: 800 23px/1 'Barlow Condensed',sans-serif; color: #3e4650;
+  border-bottom: 0;
+}
+body .sports-graphic.card-playoff-board .card-playoff-stat > span:first-child::after {
+  content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+  width: var(--card-stat-divider-length); height: var(--card-stat-divider-thickness);
+  bottom: calc((var(--card-stat-label-gap) + var(--card-stat-divider-thickness)) / -2);
+  background: #8d99a5b8;
+}
+body .sports-graphic.card-playoff-board .graphic-footer,
+body.sports-graphic-export .sports-graphic.card-playoff-board .graphic-footer {
+  height: 32px; padding: 0; border: 0; color: #c8cdd2;
+  font: 400 24px/32px 'Barlow Condensed',Arial,sans-serif;
+  letter-spacing: .24em; text-align: center; white-space: nowrap;
+}
+body .sports-graphic.card-playoff-board .graphic-footer::before,
+body .sports-graphic.card-playoff-board .graphic-footer::after {
+  content: ''; display: inline-block; width: 106px; height: 2px;
+  margin: 0 18px; vertical-align: middle; background: var(--region-bright);
+}
+body .sports-graphic.card-playoff-board .card-playoff-stat-value {
+  font: 32px/.95 'Anton',sans-serif; letter-spacing: 2px;
+}
+body .sports-graphic.card-playoff-board .card-playoff-delta .card-playoff-stat-value { font-size: 32px; letter-spacing: 2px; }
+body .sports-graphic.card-playoff-board .card-playoff-change-arrow {
+  display: inline-block; font: inherit; font-size: .7em; vertical-align: .08em;
+  margin-right: 2px;
+}
+body .sports-graphic.card-playoff-board .card-playoff-connector::before { left: 0; right: 44px; top: calc(50% - 1px); height: 4px; background: var(--card-silver-gradient); }
+body .sports-graphic.card-playoff-board .card-playoff-connector::after {
+  right: calc(41px - var(--card-connector-cap-length));
+  width: calc(4px + var(--card-connector-cap-length));
+  height: 80px; top: calc(50% - 40px); border-radius: 2px;
+  background:
+    var(--card-silver-gradient) left / 4px 100% no-repeat,
+    var(--card-silver-gradient) top left / 100% 4px no-repeat,
+    var(--card-silver-gradient) bottom left / 100% 4px no-repeat;
+}
+body .sports-graphic.card-playoff-board .card-playoff-vs {
+  width: 52px; height: 46px; padding: 0; display: grid; place-items: center;
+  border-radius: 6px; border: 2px solid #718092; background: var(--card-silver-gradient);
+  color: #080b10; -webkit-text-fill-color: #080b10 !important;
+  font: 900 28px/1 'Russo One','Anton',sans-serif;
+  text-shadow: 0 1px #fff,0 2px 2px #0005;
+  box-shadow: 0 0 0 2px #05070a,0 4px 10px #000b,inset 0 1px #fff;
+}
+body .sports-graphic.card-playoff-board .card-playoff-vs::before,
+body .sports-graphic.card-playoff-board .card-playoff-vs::after { content: none; }
+body .sports-graphic.card-playoff-board .card-playoff-row { position: relative; }
+body .sports-graphic.card-playoff-board .card-playoff-winner-vs {
+  position: absolute !important; left: calc((100% - 3 * var(--card-column-width) - clamp(0px, var(--card-connector-gap), calc(100% - 3 * var(--card-column-width) - var(--card-matchup-gap))) - var(--card-matchup-gap)) / 2 + var(--card-column-width) / 2);
+  top: calc(100% + var(--card-row-gap) / 2); transform: translate(-50%, -50%);
+  z-index: 10;
+}
+body .sports-graphic.card-playoff-board .card-playoff-heads > div {
+  color: #151515; background: var(--card-silver-gradient);
+  border: 2px solid #777f88; border-radius: 6px;
+  box-shadow: inset 0 2px #ffffffd9,0 4px 10px #0005;
+  font: 38px/1 'Anton',sans-serif !important;
+  -webkit-text-stroke: .5px #fff;
+}
+body .sports-graphic.card-playoff-board .card-playoff-team:is(.odd-extra-east,.odd-extra-west) {
+  outline: 3px solid var(--region-bright);
+  box-shadow: 0 0 0 5px var(--region-dark),inset 0 0 45px color-mix(in srgb,var(--region-bright) 25%,transparent);
+}
