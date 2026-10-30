@@ -7002,7 +7002,7 @@
                 </label>
               </div>
               <div class="history-toggle-copy">
-                Off (default): compare the live values to the latest log. On: show the last nonzero change between saved logs.
+                Off (default): compare the live values to the latest log. On: show the last nonzero change between saved logs and enable the change columns. Comparison snapshots and active projections retain their own comparison baseline.
               </div>
             </div>
           </div>
@@ -7332,6 +7332,10 @@
     let compareSnapshot = null;
     let showLastChange = localStorage.getItem("brsnRpiShowLastChange") !== "0";
     let showLastNonzeroChange = localStorage.getItem("brsnRpiShowLastNonzeroChange") === "1";
+    if(showLastNonzeroChange && !showLastChange){
+      showLastChange=true;
+      localStorage.setItem('brsnRpiShowLastChange','1');
+    }
     let snapshotListsInitialized = false;
     let previous = new Map();
     let realtimeChannel = null;
@@ -16651,6 +16655,11 @@
     els.showLastChangeToggle.addEventListener("change", () => {
       showLastChange = els.showLastChangeToggle.checked;
       localStorage.setItem("brsnRpiShowLastChange", showLastChange ? "1" : "0");
+      if(!showLastChange){
+        showLastNonzeroChange=false;
+        els.showLastNonzeroChangeToggle.checked=false;
+        localStorage.setItem('brsnRpiShowLastNonzeroChange','0');
+      }
       render();
     });
     els.showLastNonzeroChangeToggle.checked = showLastNonzeroChange;
@@ -16658,6 +16667,9 @@
       showLastNonzeroChange = els.showLastNonzeroChangeToggle.checked;
       localStorage.setItem("brsnRpiShowLastNonzeroChange", showLastNonzeroChange ? "1" : "0");
       if (showLastNonzeroChange) {
+        showLastChange=true;
+        els.showLastChangeToggle.checked=true;
+        localStorage.setItem('brsnRpiShowLastChange','1');
         try {
           await loadLastNonzeroSnapshotChanges();
         } catch (historyErr) {
