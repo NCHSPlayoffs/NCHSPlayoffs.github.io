@@ -10,14 +10,18 @@ if(!localExportHelper){document.body.classList.add('static-playoff-view');els.do
 const seasonLabels={'26-27':'2026–27','25-26':'2025–26','24-25':'2024–25','23-24':'2023–24'};
 let currentRows=[],snapshots=[],comparisonRows=[],teamById=new Map(),lastGameByTeamId=new Map();
 let showNonzeroMovement=localStorage.getItem('brsnPlayoffLastNonzeroV1')==='1';
+let showLastMovement=localStorage.getItem('brsnPlayoffLastChangeV1')!=='0' && !showNonzeroMovement;
 let comparisonExplicit=false,nonzeroKey='',nonzeroChanges=new Map();
 function movementKey(){return `${els.sport.value}:${els.season.value}:${snapshots[0]?.id||'none'}`;}
 function nonzeroActive(){return showNonzeroMovement && !comparisonExplicit;}
+function latestMovementActive(){return showLastMovement && !comparisonExplicit;}
 function syncMovementControls(){
+  $('showLastMovement').checked=showLastMovement;
+  $('showLastMovement').disabled=comparisonExplicit;
   $('showNonzeroMovement').checked=showNonzeroMovement;
   $('showNonzeroMovement').disabled=comparisonExplicit;
   $('clearMovementComparison').hidden=!comparisonExplicit;
-  $('nonzeroMovementHint').textContent=comparisonExplicit?'Selected comparison log overrides nonzero mode. Reset comparison to return.':nonzeroActive()?'Each team uses its own latest saved nonzero movement. Click the text for times.':'Click the text to browse saved RPI changes.';
+  $('nonzeroMovementHint').textContent=comparisonExplicit?'Selected comparison log overrides both movement modes. Reset comparison to return.':nonzeroActive()?'Each team uses its own latest saved nonzero movement. Click the text for times.':'Choose either movement mode. Click the text to browse saved RPI changes.';
 }
 async function loadNonzeroMovements(){
   const key=movementKey(),sport=els.sport.value,season=els.season.value;
@@ -211,7 +215,7 @@ async function loadSnapshots(){
   const selectedId=els.comparison.value;
   const dates=snapshots.map(s=>dateKey(s.snapshot_at)).filter(Boolean).sort();
   if(dates.length){els.compareDate.min=dates[0];els.compareDate.max=todayKey();}
-  const chosen=(selectedId&&snapshots.find(s=>String(s.id)===selectedId))||snapshots[0];
+  const chosen=(comparisonExplicit&&selectedId&&snapshots.find(s=>String(s.id)===selectedId))||snapshots[0];
   if(chosen){els.compareDate.value=dateKey(chosen.snapshot_at);setComparisonLogsForDate(els.compareDate.value,chosen.id);}
   else{els.compareDate.value='';els.comparison.innerHTML='<option value="">No saved RPI logs</option>';}
   await loadComparisonRows();
@@ -219,13 +223,13 @@ async function loadSnapshots(){
 async function loadComparisonRows(){
   const snapshot=snapshots.find(s=>String(s.id)===els.comparison.value);
   if(!snapshot){comparisonRows=[];return;}
-  const pageSize=1000,columns='snapshot_id,team_id,rpi,overall_rank,record,classification,region,playoff_opted_out,active';
+  const pageSize=1000,columns='snapshot_id,team_id,rpi,overall_rank,region_rank,record,classification,region,playoff_opted_out,active';
   const fetchRows=async(snapshotIds,teamIds=null)=>{
     const result=[];for(let start=0;start<snapshotIds.length;start+=80){const idBatch=snapshotIds.slice(start,start+80);for(let from=0;;from+=pageSize){let query=supabase.from('sport_rpi_snapshot_rows').select(columns).in('snapshot_id',idBatch);if(teamIds)query=query.in('team_id',teamIds);const {data,error}=await query.order('team_id').range(from,from+pageSize-1);if(error)throw error;result.push(...(data||[]));if(!data||data.length<pageSize)break;}}return result;
   };
   const selectedRows=await fetchRows([snapshot.id]),currentTeams=currentRows.filter(row=>row.classification===els.classification.value&&row.rpi!=null&&!row.playoff_opted_out&&Number.isFinite(Number(row.longitude))&&row.team_id!=null),selectedIds=new Set(selectedRows.map(row=>String(row.team_id))),missing=currentTeams.filter(row=>!selectedIds.has(String(row.team_id))).map(row=>row.team_id);
   let fallbackRows=[];
-  if(missing.length){
+  if(missing.length && !latestMovementActive()){
     const older=snapshots.filter(item=>new Date(item.snapshot_at)<new Date(snapshot.snapshot_at)).sort((a,b)=>new Date(b.snapshot_at)-new Date(a.snapshot_at));
     const candidates=await fetchRows(older.map(item=>item.id),missing),snapshotTime=new Map(older.map(item=>[String(item.id),new Date(item.snapshot_at).getTime()])),found=new Map();
     for(const row of candidates){const id=String(row.team_id);if(!missing.some(teamId=>String(teamId)===id)||row.rpi==null||row.active===false)continue;const current=currentTeams.find(team=>String(team.team_id)===id);if(!current||row.classification!==current.classification)continue;const time=snapshotTime.get(String(row.snapshot_id))||0;if(time>(found.get(id)?.time||0))found.set(id,{time,snapshotId:row.snapshot_id});}
@@ -308,12 +312,21 @@ function oddMiddleTeamId(classification,sourceRows=currentRows){
   return String(qualifiers[Math.floor(qualifiers.length/2)].team_id);
 }
 function historyFor(side,sourceRows=currentRows,sourceSport=els.sport.value){
+  if(latestMovementActive() && sourceSport===els.sport.value){
+    const snapshot=snapshots[0],byId=new Map(comparisonRows.filter(row=>row.snapshot_id===snapshot?.id).map(row=>[String(row.team_id),row]));
+    return new Map(sourceRows.map(team=>{
+      const old=byId.get(String(team.team_id));
+      const sameRegion=String(old?.region||'').toLowerCase()===String(side).toLowerCase();
+      return [String(team.team_id),{latest:true,rank:old?.classification===team.classification && sameRegion && old.active!==false && !old.playoff_opted_out ? old.region_rank??null:null,rpi:old?.rpi??null,snapshotAt:snapshot?.snapshot_at}];
+    }));
+  }
   if(nonzeroActive() && sourceSport===els.sport.value){
     return new Map(sourceRows.map(row=>{
       const m=nonzeroKey===movementKey()?nonzeroChanges.get(String(row.team_id)):null;
       return [String(row.team_id),{nonzero:true,rankChange:m?.region_rank_change??null,rpiChange:m?.rpi_change??null,lastRpiChangeAt:m?.last_rpi_change_at??null}];
     }));
   }
+  if(!comparisonExplicit && !showLastMovement && !showNonzeroMovement)return new Map(sourceRows.map(row=>[String(row.team_id),{movementHidden:true}]));
   const groups=new Map();for(const row of comparisonRows){const id=String(row.snapshot_id);if(!groups.has(id))groups.set(id,[]);groups.get(id).push(row);}
   const orderedGroups=[...groups.values()].sort((a,b)=>new Date(b[0].snapshot_at)-new Date(a[0].snapshot_at)),history=new Map(),oddId=oddMiddleTeamId(els.classification.value,sourceRows);
   for(const group of orderedGroups){
@@ -341,7 +354,8 @@ function cardEntry(entry,history){
   const style=`--team-primary:${primary};--team-secondary:${secondary};--team-accent:${primary};--rank-accent:${primary}`;
   const oddClass=t._odd_middle?` odd-extra-${t.lineRegion.toLowerCase()}`:'';
   const moveClass=move==null||!move?'zero':move>0?'pos':'neg', deltaClass=delta==null||!delta?'zero':delta>0?'positive':'negative';
-  const moveDisplay=old?.nonzero?(move==null?'—':arrow(move)):old?.rank!=null?(move===0?'—':arrow(move)):'NEW',deltaDisplay=old?.nonzero?(delta==null?'—':arrow(delta,5).replace('0.','.')):old?.rpi!=null?(delta===0?'—':arrow(delta,5).replace('0.','.')):'NEW';
+  const quiet=old?.latest || old?.movementHidden;
+  const moveDisplay=old?.nonzero?(move==null?'—':arrow(move)):old?.rank!=null?(move===0?'—':arrow(move)):quiet?'—':'NEW',deltaDisplay=old?.nonzero?(delta==null?'—':arrow(delta,5).replace('0.','.')):old?.rpi!=null?(delta===0?'—':arrow(delta,5).replace('0.','.')):quiet?'—':'NEW';
   const rankTitle=old?.nonzero?'Last nonzero regional rank movement between saved logs':old?.rank!=null?`Previous playoff rank: #${old.rank} (${dateKey(old.snapshotAt)})`:'No previous playoff rank in saved history';
   const rpiTitle=old?.nonzero?`Last nonzero saved RPI change${old.lastRpiChangeAt?' at '+new Date(old.lastRpiChangeAt).toLocaleString():' unavailable'}`:old?.rpi!=null?`Current RPI minus saved RPI ${Number(old.rpi).toFixed(5)} from ${dateKey(old.snapshotAt)}`:'No earlier saved RPI for this team';
   const name=displayTeamName(String(t.name||t.school_name||'Team').trim()),words=name.split(/\s+/),split=words.length>1?1:0,nameHtml=split?`${esc(words.slice(0,split).join(' '))}<br>${esc(words.slice(split).join(' ') )}`:esc(name);
@@ -371,7 +385,7 @@ function render(generatedAt=new Date(),sourceRows=currentRows,sourceSport=els.sp
   els.graphic.innerHTML=`<header class="card-playoff-title"><div class="card-banner-region">${side.toUpperCase()}<span>REGION</span></div><h1><span class="card-banner-heading">${esc(classification.replace(/^Class\s+/i,''))} ${esc(sportLabel)}</span><span class="card-banner-subtitle">PLAYOFF PICTURE</span></h1><div class="card-banner-meta"><div class="card-banner-wordmark"><div><b>BIG</b> <b>RED</b></div><small>SPORTS NETWORK</small></div></div></header><div class="playoff-regions card-playoff-regions"><div class="graphic-region card-playoff-region ${side}"><div class="card-playoff-heads"><div>Second Round</div><div>First Round</div></div><div class="card-playoff-rows" style="--card-row-count:${orderedRows.length}">${orderedRows.map((r,i)=>rowHtml(r,history,r.left?.type==='text'&&orderedRows[i+1]?.left?.type==='text'&&Number(r.middle?.team?.regionRank)+Number(orderedRows[i+1]?.middle?.team?.regionRank)=== (2**Math.ceil(Math.log2(Math.max(2,...rows.map(team=>Number(team.regionRank))))))/2+1)).join('')}</div><div class="card-playoff-note-slot">${hasCoinTeam?'<div class="odd-extra-note">Highlighted team’s region will be determined by a coin flip at the end of the season.</div>':''}</div></div></div>${hasPlaceholderRecord?'<div class="placeholder-record-note">* Record includes placeholder-opponent games excluded from RPI.</div>':''}${excluded.length?`<div class="excluded-teams-note">OPTED OUT: ${excluded.map(esc).join(' • ')}</div>`:''}<footer class="graphic-footer">BRSN <span>• ${esc(timestamp)}</span></footer>`;
   const snap=selectedComparisonSnapshot(),when=snap?new Date(snap.snapshot_at).toLocaleString():'no comparison log on this date';
   syncMovementControls();
-  setStatus(`${classification} ${els.sport.options[els.sport.selectedIndex]?.text||'Football'} · ${side.toUpperCase()} region · ${rows.length} playoff teams · ${nonzeroActive()?'last nonzero saved regional rank and RPI movements':`movement compared with ${when}`} · last-game arrows from ${els.compareDate.value||'—'} through today.`);
+  setStatus(`${classification} ${els.sport.options[els.sport.selectedIndex]?.text||'Football'} · ${side.toUpperCase()} region · ${rows.length} playoff teams · ${nonzeroActive()?'last nonzero saved regional rank and RPI movements':latestMovementActive()?`changes since latest snapshot: ${when}`:comparisonExplicit?`movement compared with ${when}`:'rank and RPI change display off'} · last-game arrows from ${els.compareDate.value||'—'} through today.`);
 }
 async function refresh(){
   els.reload.disabled=true;els.download.disabled=true;setStatus('Loading live RPI and saved comparison history…');
@@ -515,6 +529,7 @@ els.compareDate.addEventListener('change',async()=>{comparisonExplicit=true;sync
 $('showNonzeroMovement').addEventListener('change',async()=>{
   showNonzeroMovement=$('showNonzeroMovement').checked;
   localStorage.setItem('brsnPlayoffLastNonzeroV1',showNonzeroMovement?'1':'0');
+  if(showNonzeroMovement){showLastMovement=false;localStorage.setItem('brsnPlayoffLastChangeV1','0');}
   syncMovementControls();
   try{if(nonzeroActive())await loadNonzeroMovements();render();}catch(error){setStatus('Could not load saved nonzero movements: '+(error.message||error),true);}
 });
@@ -522,11 +537,18 @@ $('openNonzeroMovements').addEventListener('click',openNonzeroMovements);
 $('closeNonzeroMovements').addEventListener('click',()=>$('nonzeroMovementDialog').close());
 $('nonzeroMovementClass').addEventListener('change',renderNonzeroMovements);
 $('nonzeroMovementSearch').addEventListener('input',renderNonzeroMovements);
-$('clearMovementComparison').addEventListener('click',async()=>{
+async function resetMovementComparison(){
   comparisonExplicit=false;
   const latest=snapshots[0];if(latest){els.compareDate.value=dateKey(latest.snapshot_at);setComparisonLogsForDate(els.compareDate.value,latest.id);}
   syncMovementControls();
   try{await loadComparisonRows();if(nonzeroActive())await loadNonzeroMovements();await loadLastGameResults();render();}catch(error){setStatus(error.message||String(error),true);}
+}
+$('clearMovementComparison').addEventListener('click',resetMovementComparison);
+$('showLastMovement').addEventListener('change',async()=>{
+  showLastMovement=$('showLastMovement').checked;
+  localStorage.setItem('brsnPlayoffLastChangeV1',showLastMovement?'1':'0');
+  if(showLastMovement){showNonzeroMovement=false;localStorage.setItem('brsnPlayoffLastNonzeroV1','0');await resetMovementComparison();}
+  else{syncMovementControls();render();}
 });
 syncMovementControls();
 try{await loadSelectors();await refresh();}catch(e){setStatus(e.message||String(e),true);}

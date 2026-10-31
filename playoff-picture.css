@@ -104,3 +104,5 @@
 #nonzeroMovementDialog th:first-child,#nonzeroMovementDialog td:first-child{text-align:left}
 .movement-up{color:#57e5a5}.movement-down{color:#ff7786}
 @media(max-width:600px){#nonzeroMovementDialog header,.movement-dialog-body{padding:16px}.movement-dialog-filters{grid-template-columns:1fr}}
+
+.controls .nonzero-movement-control label{display:block;min-width:0;text-transform:none;letter-spacing:0;font-size:14px;color:#eef5fc;cursor:pointer}
