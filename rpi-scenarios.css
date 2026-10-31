@@ -56,3 +56,5 @@
 #rpiScenarioDialog .scenario-second-degree>summary{font-size:12px;line-height:1.6}
 @media(max-width:600px){#rpiScenarioDialog .scenario-component-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#rpiScenarioDialog .scenario-second-degree{margin-left:6px;padding-left:8px}}
 @media(max-width:600px){#rpiScenarioDialog header,#rpiScenarioDialog .scenario-body{padding:16px}#rpiScenarioDialog .scenario-game{grid-template-columns:1fr}#rpiScenarioDialog .scenario-controls label{min-width:100%}}
+
+body.schedule-embed .wrap{display:none}body.schedule-embed{background:#0c131b}body.schedule-embed .modal-backdrop{padding:8px;background:transparent}

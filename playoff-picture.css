@@ -106,3 +106,14 @@
 @media(max-width:600px){#nonzeroMovementDialog header,.movement-dialog-body{padding:16px}.movement-dialog-filters{grid-template-columns:1fr}}
 
 .controls .nonzero-movement-control label{display:block;min-width:0;text-transform:none;letter-spacing:0;font-size:14px;color:#eef5fc;cursor:pointer}
+/* Cards open the shared admin schedule/history viewer. */
+.card-playoff-team[data-playoff-team]{cursor:pointer}
+.card-playoff-team[data-playoff-team]:focus-visible{outline:4px solid #83cfff;outline-offset:3px}
+#playoffScheduleDialog{width:min(1380px,calc(100vw - 16px));height:94vh;max-height:1000px;padding:0;border:1px solid #3a5065;border-radius:12px;background:#101923;color:#eff5fc;overflow:hidden}
+#playoffScheduleDialog::backdrop{background:#030911d9;backdrop-filter:blur(3px)}
+#playoffScheduleDialog header{height:54px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 16px;border-bottom:1px solid #354b60;background:#1b2b3b;box-sizing:border-box}
+#playoffScheduleDialog h2{margin:0;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#closePlayoffSchedule{flex:0 0 34px;width:34px;height:34px;padding:0;border:1px solid #465f75;border-radius:6px;background:#22384b;color:#eff5fc;font-size:22px;cursor:pointer}
+#playoffScheduleLoading{padding:20px;color:#bed1e2}
+#playoffScheduleFrame{width:100%;height:calc(100% - 54px);border:0;background:#0c131b}
+#playoffScheduleFrame[hidden]{display:none}

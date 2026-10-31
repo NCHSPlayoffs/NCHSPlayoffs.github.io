@@ -6090,6 +6090,7 @@
             <div id="teamScheduleName" class="team-schedule-name">Team</div>
             <div id="teamScheduleMeta" class="team-schedule-meta">Selected sport</div><button type="button" id="teamScheduleConference" class="schedule-conference-link" hidden></button>
             <button type="button" id="teamScheduleScenarios" class="schedule-conference-link" hidden>RPI Scenarios</button>
+            <button type="button" id="teamScheduleSnapshots" class="schedule-conference-link" hidden>RPI Snapshot History</button>
           </div>
         </div>
 
@@ -6175,6 +6176,7 @@
           </div>
         </div>
 
+        <button id="teamHistoryScheduleBack" class="schedule-conference-link" type="button" hidden>← Schedule</button>
         <button id="teamHistoryClose" class="close-btn" type="button" aria-label="Close">×</button>
       </div>
 
@@ -7314,8 +7316,20 @@
       softball: "Softball"
     };
 
-    let currentSport = "football";
-    let currentSeason = "26-27";
+    const scheduleParams=new URLSearchParams(location.search);
+    const scheduleEmbed=scheduleParams.get('embed')==='schedule' && window.parent!==window;
+    const scheduleRequest=scheduleEmbed?{
+      teamId:scheduleParams.get('scheduleTeam'),
+      sport:Object.hasOwn(SPORT_LABELS,scheduleParams.get('sport'))?scheduleParams.get('sport'):'football',
+      season:/^\d{2}-\d{2}$/.test(scheduleParams.get('season')||'')?scheduleParams.get('season'):'26-27'
+    }:null;
+    let embedShowingStandings=false,historyOpenedFromSchedule=false;
+    if(scheduleEmbed)document.body.classList.add('schedule-embed');
+    function notifyScheduleParent(type,detail={}){
+      if(scheduleEmbed)window.parent.postMessage({type,requestId:scheduleParams.get('scheduleRequest'),...detail},location.origin);
+    }
+    let currentSport = scheduleRequest?.sport || "football";
+    let currentSeason = scheduleRequest?.season || "26-27";
     let sportSeasonRows = [];
     let currentSeasonStatus = null;
 
@@ -8047,8 +8061,11 @@
       }
     }
 
-    function openTeamHistory(row) {
+    function openTeamHistory(row, options={}) {
       if (!row?.team_id) return;
+      historyOpenedFromSchedule=Boolean(options.fromSchedule);
+      document.getElementById('teamHistoryScheduleBack').hidden=!historyOpenedFromSchedule;
+      if(historyOpenedFromSchedule)els.teamScheduleModal.inert=true;
 
       teamHistoryTeam = row;
 
@@ -8097,6 +8114,9 @@
     function closeTeamHistory() {
       teamHistoryLoadToken += 1;
       els.teamHistoryModal.classList.remove("show");
+      els.teamScheduleModal.inert=false;
+      if(historyOpenedFromSchedule)document.getElementById('teamScheduleSnapshots').focus();
+      historyOpenedFromSchedule=false;
     }
 
     function handleTeamHistoryCellClick(event) {
@@ -12058,6 +12078,7 @@
       renderSeasonStatus();
       updateSportUiCopy();
       syncAdminPanelContext();
+      if(scheduleEmbed){await loadRankings();revealFreshRankings();return;}
       subscribeRealtime();
 
       if (selectedSportSupportsLiveWorker() && currentSeasonStatus?.refresh_allowed !== false) {
@@ -12215,10 +12236,13 @@
         latestNonzeroSnapshotKey = key;
         return;
       }
-      const { data, error } = await supabase.rpc("sport_last_nonzero_snapshot_changes", {
-        p_sport: sport,
-        p_season: season
-      });
+      let response;
+      for(let attempt=0;attempt<2;attempt++){
+        response=await supabase.rpc("sport_last_nonzero_snapshot_changes", {p_sport:sport,p_season:season});
+        if(response.error?.code!=='57014' || attempt===1)break;
+        await new Promise(resolve=>setTimeout(resolve,200));
+      }
+      const {data,error}=response;
       if (error) throw error;
       if (sport !== currentSport || season !== currentSeason) return;
       latestNonzeroSnapshotChanges = new Map((data || []).map(row => [String(row.team_id), row]));
@@ -12508,7 +12532,10 @@
       if(scenarioProjection?.season===event.detail.season)scenarioProjection=null;
       render();
     });
-    window.addEventListener('rpi-scenario-view',()=>closeTeamSchedule());
+    window.addEventListener('rpi-scenario-view',()=>{
+      if(scheduleEmbed){embedShowingStandings=true;document.body.classList.remove('schedule-embed');notifyScheduleParent('rpi-schedule-standings');}
+      closeTeamSchedule();
+    });
 
     function applyDisplayRegions(targetRows = getActiveRows()) {
       targetRows.forEach(row => {
@@ -13678,6 +13705,9 @@
       const scenarioButton=document.getElementById('teamScheduleScenarios');
       scenarioButton.hidden=currentSport!=='football' || !row.team_id || Boolean(historySnapshot);
       scenarioButton.onclick=()=>RpiScenarioUI.open({client:supabase,season:currentSeason,teams:allRows,middleSide:oddMiddleSide},row);
+      const snapshotButton=document.getElementById('teamScheduleSnapshots');
+      snapshotButton.hidden=!row.team_id;
+      snapshotButton.onclick=()=>openTeamHistory(row,{fromSchedule:true});
       els.teamScheduleMeta.textContent =
         `${schoolYearLabel()} ${sportLabel()}${scheduleTeamLocation ? ` • ${scheduleTeamLocation}` : ""}${row.classification ? ` • ${row.classification}` : ""}${row.mascot ? ` • ${row.mascot}` : ""}`;
 
@@ -13802,6 +13832,7 @@
       teamScheduleDiscrepancyOrigin=null;
       syncTeamScheduleBackButton();
       els.teamScheduleModal.classList.remove("show");
+      if(!embedShowingStandings)notifyScheduleParent('rpi-schedule-close');
     }
 
     function goBackInTeamSchedules() {
@@ -13905,8 +13936,7 @@
       }
     }
 
-    void syncNormalizationRulesToPlayoffHelper();
-    void syncPlayoffSettingsToCloud(true);
+    if(!scheduleEmbed){void syncNormalizationRulesToPlayoffHelper();void syncPlayoffSettingsToCloud(true);}
 
     function populateManageClasses() {
       const selected = els.manageClass.value || "all";
@@ -15813,6 +15843,7 @@
     });
 
     els.teamHistoryClose.addEventListener("click", closeTeamHistory);
+    document.getElementById('teamHistoryScheduleBack').addEventListener('click',closeTeamHistory);
 
     els.teamHistoryModal.addEventListener("click", event => {
       if (event.target === els.teamHistoryModal) {
@@ -16831,6 +16862,7 @@
     });
 
     document.addEventListener("visibilitychange", async () => {
+      if(scheduleEmbed)return;
       if (document.visibilityState !== "visible") {
         return;
       }
@@ -16855,6 +16887,8 @@
 
     document.addEventListener("keydown", event => {
       if (event.key === "Escape") {
+        if(document.querySelector('dialog[open]') || document.getElementById('rpiImpactModal')?.classList.contains('show'))return;
+        if(els.teamHistoryModal.classList.contains('show')){event.preventDefault();closeTeamHistory();return;}
         hideContextMenu();
         closeAdmin();
         closeSettings();
@@ -16865,13 +16899,21 @@
 
     try {
       await loadSportSeasonOptions();
-      await switchSportSeason({ sport: currentSport, season: currentSeason });
+      await switchSportSeason({ sport: scheduleRequest?.sport || currentSport, season: scheduleRequest?.season || currentSeason });
+      if(scheduleEmbed){
+        const requested=allRows.find(row=>String(row.team_id)===scheduleRequest.teamId);
+        if(!requested || currentSport!==scheduleRequest.sport || currentSeason!==scheduleRequest.season)throw new Error('This team is unavailable for the selected sport and season.');
+        void openTeamSchedule(requested);
+        notifyScheduleParent('rpi-schedule-ready',{teamName:requested.name||requested.school_name});
+      }
     }
     catch (err) {
       console.error("Initial multi-sport load failed:", err);
       showError(err);
+      notifyScheduleParent('rpi-schedule-error',{message:err?.message||String(err)});
     }
 
+    if(!scheduleEmbed){
     startViewerHeartbeat();
 
     workerPollTimer = setInterval(
@@ -16888,6 +16930,7 @@
       renderWorkerStatus,
       1000
     );
+    }
 function initRpiChangeExplorer({els,supabase,escapeHtml,displayTeamName,formatSnapshotDateTime,getRows,getTeam}) {
   const style = document.createElement('style');
   style.textContent = `

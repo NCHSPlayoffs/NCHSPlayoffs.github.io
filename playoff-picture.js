@@ -12,6 +12,27 @@ let currentRows=[],snapshots=[],comparisonRows=[],teamById=new Map(),lastGameByT
 let showNonzeroMovement=localStorage.getItem('brsnPlayoffLastNonzeroV1')==='1';
 let showLastMovement=localStorage.getItem('brsnPlayoffLastChangeV1')!=='0' && !showNonzeroMovement;
 let comparisonExplicit=false,nonzeroKey='',nonzeroChanges=new Map();
+let scheduleWindowRequest=0,scheduleWindowOpener=null,scheduleWindowTimer=0;
+function openPlayoffTeamSchedule(teamId,opener){
+  const team=currentRows.find(row=>String(row.team_id)===String(teamId));if(!team)return;
+  const request=++scheduleWindowRequest,frame=$('playoffScheduleFrame'),dialog=$('playoffScheduleDialog');
+  scheduleWindowOpener=opener;
+  $('playoffScheduleTitle').textContent=`${displayTeamName(team.name||team.school_name)} · Schedule`;
+  $('playoffScheduleLoading').textContent='Loading team schedule…';$('playoffScheduleLoading').hidden=false;frame.hidden=true;
+  clearTimeout(scheduleWindowTimer);
+  scheduleWindowTimer=setTimeout(()=>{if(request===scheduleWindowRequest && frame.hidden)$('playoffScheduleLoading').textContent='The schedule is taking longer than expected. Close this window and try again.';},30000);
+  const url=new URL('index.html',location.href);
+  for(const [key,value] of Object.entries({embed:'schedule',scheduleTeam:team.team_id,sport:els.sport.value,season:els.season.value,scheduleRequest:request}))url.searchParams.set(key,String(value));
+  frame.src=url.href;if(!dialog.open)dialog.showModal();
+}
+window.addEventListener('message',event=>{
+  const frame=$('playoffScheduleFrame'),message=event.data;
+  if(event.origin!==location.origin || event.source!==frame.contentWindow || message?.requestId!==String(scheduleWindowRequest))return;
+  if(message.type==='rpi-schedule-ready'){clearTimeout(scheduleWindowTimer);$('playoffScheduleLoading').hidden=true;frame.hidden=false;}
+  if(message.type==='rpi-schedule-error'){clearTimeout(scheduleWindowTimer);$('playoffScheduleLoading').textContent=message.message||'Could not load this team’s schedule.';}
+  if(message.type==='rpi-schedule-close')$('playoffScheduleDialog').close();
+  if(message.type==='rpi-schedule-standings')$('playoffScheduleTitle').textContent='Projected RPI standings';
+});
 function movementKey(){return `${els.sport.value}:${els.season.value}:${snapshots[0]?.id||'none'}`;}
 function nonzeroActive(){return showNonzeroMovement && !comparisonExplicit;}
 function latestMovementActive(){return showLastMovement && !comparisonExplicit;}
@@ -26,7 +47,13 @@ function syncMovementControls(){
 async function loadNonzeroMovements(){
   const key=movementKey(),sport=els.sport.value,season=els.season.value;
   if(key===nonzeroKey)return;
-  const {data,error}=await supabase.rpc('sport_last_nonzero_snapshot_changes',{p_sport:sport,p_season:season});
+  let response;
+  for(let attempt=0;attempt<2;attempt++){
+    response=await supabase.rpc('sport_last_nonzero_snapshot_changes',{p_sport:sport,p_season:season});
+    if(response.error?.code!=='57014' || attempt===1)break;
+    await new Promise(resolve=>setTimeout(resolve,200));
+  }
+  const {data,error}=response;
   if(error)throw error;
   if(key!==movementKey())return;
   nonzeroChanges=new Map((data||[]).map(row=>[String(row.team_id),row]));nonzeroKey=key;
@@ -360,7 +387,7 @@ function cardEntry(entry,history){
   const rpiTitle=old?.nonzero?`Last nonzero saved RPI change${old.lastRpiChangeAt?' at '+new Date(old.lastRpiChangeAt).toLocaleString():' unavailable'}`:old?.rpi!=null?`Current RPI minus saved RPI ${Number(old.rpi).toFixed(5)} from ${dateKey(old.snapshotAt)}`:'No earlier saved RPI for this team';
   const name=displayTeamName(String(t.name||t.school_name||'Team').trim()),words=name.split(/\s+/),split=words.length>1?1:0,nameHtml=split?`${esc(words.slice(0,split).join(' '))}<br>${esc(words.slice(split).join(' ') )}`:esc(name);
   const lastGame=lastGameByTeamId.get(String(t.team_id)),lastGameGlyph=lastGame?lastGame.result==='W'?'▲':lastGame.result==='L'?'▼':'—':'';
-  return `<div class="card-playoff-team${oddClass}" data-move="${moveClass}" ${t._odd_middle?'title="Coin-flip team: this region will be decided at the end of the season"':''} style="${style}"><div class="card-playoff-rank"><svg class="card-playoff-rank-edge" viewBox="0 0 72 104" preserveAspectRatio="none" aria-hidden="true"><path d="M71 0 V87 L63 103 H0" /></svg><div class="card-playoff-rank-number">${t.regionRank}</div><div class="card-playoff-move" title="${esc(rankTitle)}"><span>${moveDisplay}</span></div></div><div class="card-playoff-hero"><div class="card-playoff-logo-wrap">${logo?`<img class="card-playoff-logo" src="${esc(logo)}" alt="" referrerpolicy="no-referrer">`:'<div class="card-playoff-logo-placeholder"></div>'}</div><div class="card-playoff-copy"><div class="card-playoff-school">${nameHtml}</div>${t.mascot?`<div class="card-playoff-mascot">${esc(t.mascot)}</div>`:''}</div></div><div class="card-playoff-stats"><div class="card-playoff-stat"><span>W-L-T</span><div class="card-playoff-stat-value card-playoff-record" title="${esc(t.pseudo_game_count?`Includes placeholder-opponent games excluded from RPI. RPI record: ${t.record}`:'Record used for RPI')}">${lastGame?`<span class="card-playoff-last-result" title="Last game in comparison range: ${lastGame.result==='W'?'Win':lastGame.result==='L'?'Loss':'Tie'} on ${esc(lastGame.gameDay)}">${lastGameGlyph}</span>`:''}${esc(t.display_record??t.record??'—')}</div></div><div class="card-playoff-stat"><span>RPI</span><div class="card-playoff-stat-value">${Number(t.rpi).toFixed(5).replace(/^0\./,'.')}</div></div><div class="card-playoff-stat card-playoff-delta ${deltaClass}" title="${esc(rpiTitle)}"><span>RPI CHANGE</span><div class="card-playoff-stat-value">${deltaDisplay}</div></div></div></div>`;
+  return `<div class="card-playoff-team${oddClass}" data-playoff-team="${esc(t.team_id)}" role="button" tabindex="0" aria-label="${esc("Open schedule for "+name)}" data-move="${moveClass}" ${t._odd_middle?'title="Coin-flip team: this region will be decided at the end of the season"':''} style="${style}"><div class="card-playoff-rank"><svg class="card-playoff-rank-edge" viewBox="0 0 72 104" preserveAspectRatio="none" aria-hidden="true"><path d="M71 0 V87 L63 103 H0" /></svg><div class="card-playoff-rank-number">${t.regionRank}</div><div class="card-playoff-move" title="${esc(rankTitle)}"><span>${moveDisplay}</span></div></div><div class="card-playoff-hero"><div class="card-playoff-logo-wrap">${logo?`<img class="card-playoff-logo" src="${esc(logo)}" alt="" referrerpolicy="no-referrer">`:'<div class="card-playoff-logo-placeholder"></div>'}</div><div class="card-playoff-copy"><div class="card-playoff-school">${nameHtml}</div>${t.mascot?`<div class="card-playoff-mascot">${esc(t.mascot)}</div>`:''}</div></div><div class="card-playoff-stats"><div class="card-playoff-stat"><span>W-L-T</span><div class="card-playoff-stat-value card-playoff-record" title="${esc(t.pseudo_game_count?`Includes placeholder-opponent games excluded from RPI. RPI record: ${t.record}`:'Record used for RPI')}">${lastGame?`<span class="card-playoff-last-result" title="Last game in comparison range: ${lastGame.result==='W'?'Win':lastGame.result==='L'?'Loss':'Tie'} on ${esc(lastGame.gameDay)}">${lastGameGlyph}</span>`:''}${esc(t.display_record??t.record??'—')}</div></div><div class="card-playoff-stat"><span>RPI</span><div class="card-playoff-stat-value">${Number(t.rpi).toFixed(5).replace(/^0\./,'.')}</div></div><div class="card-playoff-stat card-playoff-delta ${deltaClass}" title="${esc(rpiTitle)}"><span>RPI CHANGE</span><div class="card-playoff-stat-value">${deltaDisplay}</div></div></div></div>`;
 }
 function bracketRows(rows,total){
   const teams=new Map(rows.map(row=>[Number(row.regionRank),{type:'team',team:row}]));
@@ -551,4 +578,16 @@ $('showLastMovement').addEventListener('change',async()=>{
   else{syncMovementControls();render();}
 });
 syncMovementControls();
+$('closePlayoffSchedule').addEventListener('click',()=>$('playoffScheduleDialog').close());
+$('playoffScheduleDialog').addEventListener('close',()=>{
+  clearTimeout(scheduleWindowTimer);
+  scheduleWindowRequest++;$('playoffScheduleFrame').src='about:blank';$('playoffScheduleFrame').hidden=true;
+  if(scheduleWindowOpener?.isConnected)scheduleWindowOpener.focus();
+});
+els.graphic.addEventListener('click',event=>{const card=event.target.closest('[data-playoff-team]');if(card)openPlayoffTeamSchedule(card.dataset.playoffTeam,card);});
+els.graphic.addEventListener('keydown',event=>{
+  if(!['Enter',' '].includes(event.key))return;
+  const card=event.target.closest('[data-playoff-team]');if(!card)return;
+  event.preventDefault();openPlayoffTeamSchedule(card.dataset.playoffTeam,card);
+});
 try{await loadSelectors();await refresh();}catch(e){setStatus(e.message||String(e),true);}
