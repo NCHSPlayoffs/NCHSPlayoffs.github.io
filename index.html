@@ -8065,7 +8065,10 @@
       if (!row?.team_id) return;
       historyOpenedFromSchedule=Boolean(options.fromSchedule);
       document.getElementById('teamHistoryScheduleBack').hidden=!historyOpenedFromSchedule;
-      if(historyOpenedFromSchedule)els.teamScheduleModal.inert=true;
+      if(historyOpenedFromSchedule){
+        els.teamScheduleModal.inert=true;
+        els.teamScheduleModal.classList.remove('show');
+      }
 
       teamHistoryTeam = row;
 
@@ -8115,7 +8118,10 @@
       teamHistoryLoadToken += 1;
       els.teamHistoryModal.classList.remove("show");
       els.teamScheduleModal.inert=false;
-      if(historyOpenedFromSchedule)document.getElementById('teamScheduleSnapshots').focus();
+      if(historyOpenedFromSchedule && currentScheduleTeam){
+        els.teamScheduleModal.classList.add('show');
+        document.getElementById('teamScheduleSnapshots').focus();
+      }
       historyOpenedFromSchedule=false;
     }
 
